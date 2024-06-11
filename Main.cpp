@@ -4,6 +4,9 @@ int main()
 {
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML Game");
 
+    // Включить VSync
+    window.setVerticalSyncEnabled(true);
+    
     while (window.isOpen())
     {
         sf::Event event;
