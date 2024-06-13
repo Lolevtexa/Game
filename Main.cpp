@@ -14,12 +14,11 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-        }
+        }   
 
         window.clear(sf::Color::White);
 
         // Draw your game objects here
-
         window.display();
     }
 

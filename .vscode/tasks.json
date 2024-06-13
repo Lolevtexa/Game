@@ -2,18 +2,38 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "echo",
+            "label": "build for Linux",
             "type": "shell",
             "command": "g++",
             "args":[
-                "-g", "*.cpp",
-                "-o", "Game.out",
-                "-lsfml-graphics", "-lsfml-window", "-lsfml-system"
+                "-g", "${workspaceFolder}/*.cpp",
+                "-o", "${workspaceFolder}/Game.out",
+                "-I${workspaceFolder}/SFML-2.6.1-linux-gcc-64-bit/include",
+                "-L${workspaceFolder}/SFML-2.6.1-linux-gcc-64-bit/lib",
+                "-lsfml-graphics", "-lsfml-window", "-lsfml-system", "-lsfml-audio"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "build for Windows",
+            "type": "shell",
+            "command": "/usr/bin/x86_64-w64-mingw32-g++",
+            "args": [
+                "-g", "${workspaceFolder}/*.cpp",
+                "-o", "${workspaceFolder}/Game.exe",
+                "-I${workspaceFolder}/SFML-2.6.1-windows-gcc-13.1.0-mingw-64-bit/include",
+                "-L${workspaceFolder}/SFML-2.6.1-windows-gcc-13.1.0-mingw-64-bit/lib",
+                "-lsfml-graphics", "-lsfml-window", "-lsfml-system", "-lsfml-audio"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Generated task by Debugger."
         }
     ]
 }
