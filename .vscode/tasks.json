@@ -7,9 +7,9 @@
             "command": "g++",
             "args":[
                 "-g", "${workspaceFolder}/*.cpp",
-                "-o", "${workspaceFolder}/Game.out",
-                "-I${workspaceFolder}/SFML-2.6.1-linux-gcc-64-bit/include",
-                "-L${workspaceFolder}/SFML-2.6.1-linux-gcc-64-bit/lib",
+                "-o", "${workspaceFolder}/build/linux/Game.out",
+                "-I${workspaceFolder}/include",
+                "-L${workspaceFolder}/libraries/SFML-2.6.1-linux-gcc-64-bit",
                 "-lsfml-graphics", "-lsfml-window", "-lsfml-system", "-lsfml-audio"
             ],
             "group": {
@@ -23,9 +23,9 @@
             "command": "/usr/bin/x86_64-w64-mingw32-g++",
             "args": [
                 "-g", "${workspaceFolder}/*.cpp",
-                "-o", "${workspaceFolder}/Game.exe",
-                "-I${workspaceFolder}/SFML-2.6.1-windows-gcc-13.1.0-mingw-64-bit/include",
-                "-L${workspaceFolder}/SFML-2.6.1-windows-gcc-13.1.0-mingw-64-bit/lib",
+                "-o", "${workspaceFolder}/build/windows/Game.exe",
+                "-I${workspaceFolder}/include",
+                "-L${workspaceFolder}/libraries/SFML-2.6.1-windows-gcc-13.1.0-mingw-64-bit",
                 "-lsfml-graphics", "-lsfml-window", "-lsfml-system", "-lsfml-audio"
             ],
             "group": {
@@ -34,6 +34,28 @@
             },
             "problemMatcher": ["$gcc"],
             "detail": "Generated task by Debugger."
+        },
+        {
+            "label": "build with Clang",
+            "type": "shell",
+            "command": "/usr/bin/clang++",
+            "args": [
+                "-g",
+                "${workspaceFolder}/Main.cpp",
+                "-o",
+                "${workspaceFolder}/Main.out",
+                "-I${workspaceFolder}/SFML/include",
+                "-lsfml-graphics",
+                "-lsfml-window",
+                "-lsfml-system"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
         }
     ]
 }

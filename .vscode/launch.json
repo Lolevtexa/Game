@@ -5,7 +5,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/Game.out",
+            "program": "${workspaceFolder}/build/linux/Game.out",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
