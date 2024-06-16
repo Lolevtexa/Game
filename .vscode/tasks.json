@@ -34,28 +34,6 @@
             },
             "problemMatcher": ["$gcc"],
             "detail": "Generated task by Debugger."
-        },
-        {
-            "label": "build with Clang",
-            "type": "shell",
-            "command": "/usr/bin/clang++",
-            "args": [
-                "-g",
-                "${workspaceFolder}/Main.cpp",
-                "-o",
-                "${workspaceFolder}/Main.out",
-                "-I${workspaceFolder}/SFML/include",
-                "-lsfml-graphics",
-                "-lsfml-window",
-                "-lsfml-system"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": [
-                "$gcc"
-            ]
         }
     ]
 }
