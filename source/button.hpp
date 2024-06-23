@@ -14,7 +14,6 @@ private:
   static const int pressedAlpha = 255;
 
   std::string filename;
-  std::string text;
   bool isActive = false;
 
   sf::RectangleShape button;
