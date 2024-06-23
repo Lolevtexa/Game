@@ -1,22 +1,22 @@
 #pragma once
-#include "button.hpp"
+#include "imageButton.hpp"
 #include <iostream>
 
 class MainScene : public sf::Drawable {
 private:
-  std::vector<Button> buttons;
+  std::vector<ImageButton> buttons;
   std::vector<sf::Drawable *> mainButtons;
   std::vector<sf::Drawable *> settingsButtons;
 
 public:
   MainScene() {
-    buttons.push_back(Button("../assets/pictures/play.png", 100, 100, 100, 100, []() {
+    buttons.push_back(ImageButton("../assets/pictures/play.png", 100, 100, 100, 100, []() {
       std::cout << "Play button pressed" << std::endl;
     }));
-    buttons.push_back(Button("../assets/pictures/settings.png", 100, 300, 100, 100, []() {
+    buttons.push_back(ImageButton("../assets/pictures/settings.png", 100, 300, 100, 100, []() {
       std::cout << "Settings button pressed" << std::endl;
     }));
-    buttons.push_back(Button("../assets/pictures/exit.png", 100, 500, 100, 100, []() {
+    buttons.push_back(ImageButton("../assets/pictures/exit.png", 100, 500, 100, 100, []() {
       std::cout << "Exit button pressed" << std::endl;
     }));
     // Create main buttons

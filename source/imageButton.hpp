@@ -8,7 +8,7 @@
 #include <string>
 
 
-class Button : public sf::Drawable {
+class ImageButton : public sf::Drawable {
 private:
   static const int unpressedAlpha = 127;
   static const int pressedAlpha = 255;
@@ -24,7 +24,7 @@ private:
 
 public:
   template <typename Func>
-  Button(const std::string &filename, int x, int y, int width, int height,
+  ImageButton(const std::string &filename, int x, int y, int width, int height,
          Func func) {
     this->filename = filename;
     eventButtonPressed = func;
@@ -35,7 +35,7 @@ public:
     loadSprite(unpressedAlpha);
   }
 
-  Button(const Button &other)
+  ImageButton(const ImageButton &other)
       : filename(other.filename), eventButtonPressed(other.eventButtonPressed),
         button(other.button), icon(other.icon), texture(other.texture) {
     button.setTexture(&texture);
