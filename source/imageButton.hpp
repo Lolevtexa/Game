@@ -32,7 +32,7 @@ public:
     button.setSize(sf::Vector2f(width, height));
     button.setPosition(x, y);
 
-    loadSprite(unpressedAlpha);
+    updateAppearance(unpressedAlpha);
   }
 
   ImageButton(const ImageButton &other)
@@ -46,7 +46,7 @@ public:
       if (event.mouseButton.button == sf::Mouse::Left) {
         if (button.getGlobalBounds().contains(event.mouseButton.x,
                                               event.mouseButton.y)) {
-          loadSprite(pressedAlpha);
+          updateAppearance(pressedAlpha);
         }
       }
     } else if (event.type == sf::Event::MouseButtonReleased) {
@@ -56,7 +56,7 @@ public:
           isActive = true;
         }
 
-        loadSprite(unpressedAlpha);
+        updateAppearance(unpressedAlpha);
       }
     }
   }
@@ -73,7 +73,7 @@ public:
   }
 
 private:
-  void loadSprite(int alpha) {
+  void updateAppearance(int alpha) {
     if (icon.loadFromFile(filename)) {
       icon.createMaskFromColor(sf::Color::Black, alpha);
       if (texture.loadFromImage(icon)) {
