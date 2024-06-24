@@ -47,6 +47,30 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "copy assets",
+            "type": "shell",
+            "command": "cp",
+            "args": [
+                "-r", "${workspaceFolder}/assets", "${workspaceFolder}/build"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Build all",
+            "type": "shell",
+            "command": "echo",
+            "args": ["Building everything..."],
+            "dependsOn": ["build for Linux", "build for Windows", "find dll files for Windows", "copy assets"],
+            "dependsOrder": "sequence",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }
