@@ -1,38 +1,54 @@
 #pragma once
-#include "imageButton.hpp"
+// #include "imageButton.hpp"
+#include "textButton.hpp"
+#include <SFML/Graphics/Font.hpp>
 #include <iostream>
 
 class MainScene : public sf::Drawable {
 private:
-  std::vector<ImageButton> buttons;
-  std::vector<sf::Drawable *> mainButtons;
-  std::vector<sf::Drawable *> settingsButtons;
+  const int buttonWidth = 150;
+  const int buttonHeight = 50;
+  const int buttonIndent = 10;
+
+  // std::vector<ImageButtons> imageButtons;
+  std::vector<TextButton> textButtons;
+  std::vector<Button *> mainButtons;
+  std::vector<Button *> settingsButtons;
+
+  sf::Font font;
 
 public:
-  MainScene() {
-    buttons.push_back(ImageButton("../assets/pictures/play.png", 100, 100, 100, 100, []() {
-      std::cout << "Play button pressed" << std::endl;
-    }));
-    buttons.push_back(ImageButton("../assets/pictures/settings.png", 100, 300, 100, 100, []() {
-      std::cout << "Settings button pressed" << std::endl;
-    }));
-    buttons.push_back(ImageButton("../assets/pictures/exit.png", 100, 500, 100, 100, []() {
-      std::cout << "Exit button pressed" << std::endl;
-    }));
-    // Create main buttons
-    for (auto &button : buttons) {
-      mainButtons.push_back(&button);
+  MainScene(std::function<void()> exitFunc) {
+    if (!font.loadFromFile("../assets/fonts/arial.ttf")) {
+      throw std::runtime_error("Cannot load font");
     }
+
+    textButtons.emplace_back(font, "New game", []() {
+      std::cout << "Play button pressed" << std::endl;
+    });
+    textButtons.emplace_back(font, "Load game", []() {
+      std::cout << "Load button pressed" << std::endl;
+    });
+    textButtons.emplace_back(font, "Settings", []() {
+      std::cout << "Settings button pressed" << std::endl;
+    });
+    textButtons.emplace_back(font, "Exit", exitFunc);
+
+    for (int i = 0; i < textButtons.size(); i++) {
+      mainButtons.push_back(&textButtons[i]);
+    }
+
+    setButtonsBound();
   }
 
   void eventProcessing(sf::Event event) {
-    for (auto &button : buttons) {
+    for (auto &button : textButtons) {
       button.eventProcessing(event);
     }
   }
 
   void update() {
-    for (auto &button : buttons) {
+    for (auto &button : textButtons) {
       button.update();
     }
   }
@@ -44,6 +60,14 @@ public:
 
     for (auto &button : settingsButtons) {
       target.draw(*button, states);
+    }
+  }
+
+private:
+  void setButtonsBound() {
+    for (int i = 0; i < mainButtons.size(); i++) {
+      mainButtons[i]->setBound(10, 10 + i * (buttonHeight + buttonIndent),
+                               buttonWidth, buttonHeight);
     }
   }
 };
