@@ -1,6 +1,6 @@
 #pragma once
 #include "button.hpp"
-#include "resourceLoader.hpp"
+#include "resource.hpp"
 #include <SFML/Graphics/Text.hpp>
 
 class TextButton : public Button {
@@ -10,7 +10,7 @@ protected:
 public:
   template <typename Func>
   TextButton(std::string text, Func func) : Button(func) {
-    this->text.setFont(ResourceLoader::defaultFont);
+    this->text.setFont(Resource::defaultFont);
     this->text.setString(text);
     this->text.setCharacterSize(24);
 
