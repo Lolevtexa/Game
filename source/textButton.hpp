@@ -26,13 +26,6 @@ public:
                      y + height / 2 - text.getGlobalBounds().height / 2);
   }
 
-  void update() {
-    if (isActive) {
-      eventButtonPressed();
-      isActive = false;
-    }
-  }
-
   void draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(body, states);
     target.draw(text, states);
