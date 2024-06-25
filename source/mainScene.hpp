@@ -15,24 +15,18 @@ private:
   std::vector<Button *> mainButtons;
   std::vector<Button *> settingsButtons;
 
-  sf::Font font;
-
 public:
   MainScene(std::function<void()> exitFunc) {
-    if (!font.loadFromFile("../assets/fonts/arial.ttf")) {
-      throw std::runtime_error("Cannot load font");
-    }
-
-    textButtons.emplace_back(font, "New game", []() {
+    textButtons.emplace_back("New game", []() {
       std::cout << "Play button pressed" << std::endl;
     });
-    textButtons.emplace_back(font, "Load game", []() {
+    textButtons.emplace_back("Load game", []() {
       std::cout << "Load button pressed" << std::endl;
     });
-    textButtons.emplace_back(font, "Settings", []() {
+    textButtons.emplace_back("Settings", []() {
       std::cout << "Settings button pressed" << std::endl;
     });
-    textButtons.emplace_back(font, "Exit", exitFunc);
+    textButtons.emplace_back("Exit", exitFunc);
 
     for (int i = 0; i < textButtons.size(); i++) {
       mainButtons.push_back(&textButtons[i]);
