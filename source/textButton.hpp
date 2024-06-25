@@ -9,8 +9,7 @@ protected:
 
 public:
   template <typename Func>
-  TextButton(const sf::Font &font, std::string text, Func func) 
-    : Button(func) {
+  TextButton(const sf::Font &font, std::string text, Func func) : Button(func) {
     this->text.setFont(font);
     this->text.setString(text);
     this->text.setCharacterSize(24);
@@ -25,26 +24,6 @@ public:
 
     text.setPosition(x + width / 2 - text.getGlobalBounds().width / 2,
                      y + height / 2 - text.getGlobalBounds().height / 2);
-  }
-
-  void eventProcessing(sf::Event event) {
-    if (event.type == sf::Event::MouseButtonPressed) {
-      if (event.mouseButton.button == sf::Mouse::Left) {
-        if (body.getGlobalBounds().contains(event.mouseButton.x,
-                                            event.mouseButton.y)) {
-          updateAppearance(pressedAlpha);
-        }
-      }
-    } else if (event.type == sf::Event::MouseButtonReleased) {
-      if (event.mouseButton.button == sf::Mouse::Left) {
-        if (body.getGlobalBounds().contains(event.mouseButton.x,
-                                            event.mouseButton.y)) {
-          isActive = true;
-        }
-
-        updateAppearance(unpressedAlpha);
-      }
-    }
   }
 
   void update() {

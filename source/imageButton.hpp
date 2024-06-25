@@ -10,31 +10,12 @@ protected:
 
 public:
   template <typename Func>
-  ImageButtons(const std::string &filename, int x, int y, int width, int height, Func func)
+  ImageButtons(const std::string &filename, int x, int y, int width, int height,
+               Func func)
       : Button(sf::Vector2f(width, height), sf::Vector2f(x, y), func) {
     this->filename = filename;
 
     updateAppearance(unpressedAlpha);
-  }
-
-  void eventProcessing(sf::Event event) {
-    if (event.type == sf::Event::MouseButtonPressed) {
-      if (event.mouseButton.button == sf::Mouse::Left) {
-        if (body.getGlobalBounds().contains(event.mouseButton.x,
-                                            event.mouseButton.y)) {
-          updateAppearance(pressedAlpha);
-        }
-      }
-    } else if (event.type == sf::Event::MouseButtonReleased) {
-      if (event.mouseButton.button == sf::Mouse::Left) {
-        if (body.getGlobalBounds().contains(event.mouseButton.x,
-                                            event.mouseButton.y)) {
-          isActive = true;
-        }
-
-        updateAppearance(unpressedAlpha);
-      }
-    }
   }
 
   void draw(sf::RenderTarget &target, sf::RenderStates states) const {

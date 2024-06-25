@@ -21,7 +21,25 @@ public:
     eventButtonPressed = func;
   }
 
-  virtual void eventProcessing(sf::Event event) = 0;
+  void eventProcessing(sf::Event event) {
+    if (event.type == sf::Event::MouseButtonPressed) {
+      if (event.mouseButton.button == sf::Mouse::Left) {
+        if (body.getGlobalBounds().contains(event.mouseButton.x,
+                                            event.mouseButton.y)) {
+          updateAppearance(pressedAlpha);
+        }
+      }
+    } else if (event.type == sf::Event::MouseButtonReleased) {
+      if (event.mouseButton.button == sf::Mouse::Left) {
+        if (body.getGlobalBounds().contains(event.mouseButton.x,
+                                            event.mouseButton.y)) {
+          isActive = true;
+        }
+
+        updateAppearance(unpressedAlpha);
+      }
+    }
+  }
 
   void update() {
     if (isActive) {
@@ -31,4 +49,7 @@ public:
   }
 
   virtual void setBound(float x, float y, float width, float height) = 0;
+
+protected:
+  virtual void updateAppearance(int alpha) = 0;
 };
