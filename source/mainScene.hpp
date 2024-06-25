@@ -1,5 +1,4 @@
 #pragma once
-// #include "imageButton.hpp"
 #include "textButton.hpp"
 #include <SFML/Graphics/Font.hpp>
 #include <iostream>
@@ -10,40 +9,46 @@ private:
   const int buttonHeight = 50;
   const int buttonIndent = 10;
 
-  // std::vector<ImageButtons> imageButtons;
-  std::vector<TextButton> textButtons;
   std::vector<Button *> mainButtons;
-  std::vector<Button *> settingsButtons;
+
+  int settingsPage = 0;
+  std::vector<std::vector<Button *>> settingsButtons{4};
 
 public:
   MainScene(std::function<void()> exitFunc) {
-    textButtons.emplace_back("New game", []() {
-      std::cout << "Play button pressed" << std::endl;
-    });
-    textButtons.emplace_back("Load game", []() {
-      std::cout << "Load button pressed" << std::endl;
-    });
-    textButtons.emplace_back("Settings", []() {
-      std::cout << "Settings button pressed" << std::endl;
-    });
-    textButtons.emplace_back("Exit", exitFunc);
+    addMainButton("New game", [this]() { setSettingsPage(1); });
+    addMainButton("Load game", [this]() { setSettingsPage(2); });
+    addMainButton("Settings", [this]() { setSettingsPage(3); });
+    addMainButton("Exit", exitFunc);
+    setMainButtonsBound();
 
-    for (int i = 0; i < textButtons.size(); i++) {
-      mainButtons.push_back(&textButtons[i]);
-    }
-
-    setButtonsBound();
+    addSettingsButton(
+        "Start game", []() { std::cout << "Start game" << std::endl; }, 1);
+    addSettingsButton("Back", [this]() { setSettingsPage(0); }, 1);
+    addSettingsButton(
+        "Full screen", []() { std::cout << "Full screen" << std::endl; }, 2);
+    addSettingsButton("Back", [this]() { setSettingsPage(0); }, 2);
+    addSettingsButton("Back", [this]() { setSettingsPage(0); }, 3);
+    setSettingsButtonsBound();
   }
 
   void eventProcessing(sf::Event event) {
-    for (auto &button : textButtons) {
-      button.eventProcessing(event);
+    for (auto &button : mainButtons) {
+      button->eventProcessing(event);
+    }
+
+    for (auto &button : settingsButtons[settingsPage]) {
+      button->eventProcessing(event);
     }
   }
 
   void update() {
-    for (auto &button : textButtons) {
-      button.update();
+    for (auto &button : mainButtons) {
+      button->update();
+    }
+
+    for (auto &button : settingsButtons[settingsPage]) {
+      button->update();
     }
   }
 
@@ -52,16 +57,41 @@ public:
       target.draw(*button, states);
     }
 
-    for (auto &button : settingsButtons) {
+    for (auto &button : settingsButtons[settingsPage]) {
       target.draw(*button, states);
     }
   }
 
 private:
-  void setButtonsBound() {
+  void setSettingsPage(int page) {
+    settingsPage = settingsPage == page ? 0 : page;
+  }
+
+  void addMainButton(const std::string &text, std::function<void()> func) {
+    mainButtons.emplace_back(new TextButton(text, func));
+  }
+
+  void setMainButtonsBound() {
     for (int i = 0; i < mainButtons.size(); i++) {
-      mainButtons[i]->setBound(10, 10 + i * (buttonHeight + buttonIndent),
+      mainButtons[i]->setBound(buttonIndent,
+                               buttonIndent + i * (buttonHeight + buttonIndent),
                                buttonWidth, buttonHeight);
+    }
+  }
+
+  void addSettingsButton(const std::string &text, std::function<void()> func,
+                         int page) {
+    settingsButtons[page].emplace_back(new TextButton(text, func));
+  }
+
+  void setSettingsButtonsBound() {
+    for (int i = 0; i < settingsButtons.size(); i++) {
+      for (int j = 0; j < settingsButtons[i].size(); j++) {
+        settingsButtons[i][j]->setBound(buttonIndent * 2 + buttonWidth,
+                                        buttonIndent +
+                                            j * (buttonHeight + buttonIndent),
+                                        buttonWidth, buttonHeight);
+      }
     }
   }
 };
