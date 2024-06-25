@@ -73,7 +73,7 @@
             }
         },
         {
-            "label": "eexport LD_LIBRARY_PATH for Linux",
+            "label": "export LD_LIBRARY_PATH for Linux",
             "type": "shell",
             "command": "export",
             "args": ["LD_LIBRARY_PATH=/home/lolevtexa/proga/Projects/Game/libraries/SFML-2.6.1-linux-gcc-64-bit"],
