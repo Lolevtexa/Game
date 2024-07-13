@@ -26,6 +26,14 @@ public:
                      y + height / 2 - text.getGlobalBounds().height / 2);
   }
 
+  void setText(std::string text) {
+    this->text.setString(text);
+    this->text.setPosition(body.getPosition().x + body.getSize().x / 2 -
+                               this->text.getGlobalBounds().width / 2,
+                           body.getPosition().y + body.getSize().y / 2 -
+                               this->text.getGlobalBounds().height / 2);
+  }
+
   void draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(body, states);
     target.draw(text, states);
