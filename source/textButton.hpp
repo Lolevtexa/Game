@@ -14,34 +14,40 @@ public:
     this->text.setString(text);
     this->text.setCharacterSize(24);
 
-    updateAppearance(unpressedAlpha);
+    updateAppearance(unpressedColor);
   }
 
-  void setBound(float x, float y, float width, float height) {
-    body.setSize(sf::Vector2f(width, height));
-    body.setPosition(x, y);
-    body.setFillColor(sf::Color::White);
+  TextButton &operator=(const TextButton &button) {
+    body = button.body;
+    text = button.text;
+    action = button.action;
+    isActive = button.isActive;
+
+    return *this;
+  }
+
+  TextButton(const TextButton &button) : Button(button) {
+    body = button.body;
+    text = button.text;
+    action = button.action;
+    isActive = button.isActive;
+  }
+
+  void setBound(int x, int y, int width, int height, int indent = 0) {
+    Button::setBound(x, y, width, height);
 
     text.setPosition(x + width / 2 - text.getGlobalBounds().width / 2,
                      y + height / 2 - text.getGlobalBounds().height / 2);
   }
 
-  void setText(std::string text) {
-    this->text.setString(text);
-    this->text.setPosition(body.getPosition().x + body.getSize().x / 2 -
-                               this->text.getGlobalBounds().width / 2,
-                           body.getPosition().y + body.getSize().y / 2 -
-                               this->text.getGlobalBounds().height / 2);
-  }
-
   void draw(sf::RenderTarget &target, sf::RenderStates states) const {
-    target.draw(body, states);
+    Button::draw(target, states);
     target.draw(text, states);
   }
 
 private:
-  void updateAppearance(int alpha) {
-    body.setOutlineColor(sf::Color(0, 0, 0, alpha));
-    text.setFillColor(sf::Color(0, 0, 0, alpha));
+  void updateAppearance(sf::Color color) {
+    Button::updateAppearance(color);
+    text.setFillColor(color);
   }
 };

@@ -1,4 +1,3 @@
-#include "SFML/Graphics/View.hpp"
 #include "mainScene.hpp"
 #include <SFML/Graphics.hpp>
 

@@ -1,32 +1,49 @@
 #pragma once
-#include "SFML/Graphics/RenderTarget.hpp"
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Window/Event.hpp>
 #include <functional>
 
 class Button : public sf::Drawable {
 protected:
-  static const int unpressedAlpha = 127;
-  static const int pressedAlpha = 255;
+  static const sf::Color pressedColor;
+  static const sf::Color unpressedColor;
 
   bool isActive = false;
 
   sf::RectangleShape body;
-  std::function<void()> eventButtonPressed;
+  std::function<void()> action;
 
 public:
   Button(std::function<void()> func) {
-    body.setOutlineThickness(1);
+    action = func;
 
-    eventButtonPressed = func;
+    body.setOutlineThickness(3);
+    body.setFillColor(sf::Color(0, 0, 0, 0));
+
+    updateAppearance(unpressedColor);
   }
 
-  void eventProcessing(sf::Event event) {
+  Button &operator=(const Button &button) {
+    body = button.body;
+    action = button.action;
+    isActive = button.isActive;
+
+    return *this;
+  }
+
+  Button(const Button &button) {
+    body = button.body;
+    action = button.action;
+    isActive = button.isActive;
+  }
+
+  virtual void eventProcessing(sf::Event event) {
     if (event.type == sf::Event::MouseButtonPressed) {
       if (event.mouseButton.button == sf::Mouse::Left) {
         if (body.getGlobalBounds().contains(event.mouseButton.x,
                                             event.mouseButton.y)) {
-          updateAppearance(pressedAlpha);
+          updateAppearance(pressedColor);
         }
       }
     } else if (event.type == sf::Event::MouseButtonReleased) {
@@ -36,20 +53,39 @@ public:
           isActive = true;
         }
 
-        updateAppearance(unpressedAlpha);
+        updateAppearance(unpressedColor);
       }
     }
   }
 
-  void update() {
+  virtual void update() {
     if (isActive) {
-      eventButtonPressed();
+      action();
       isActive = false;
     }
   }
 
-  virtual void setBound(float x, float y, float width, float height) = 0;
+  virtual void setBound(int x, int y, int width, int height, int indent = 0) {
+    body.setSize(sf::Vector2f(width, height));
+    body.setPosition(x, y);
+  }
+
+  sf::RectangleShape getBound() { return body; }
+
+  virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const {
+    target.draw(body, states);
+  }
+
+  friend class MultiSelectButton;
 
 protected:
-  virtual void updateAppearance(int alpha) = 0;
+  virtual void updateAppearance(sf::Color color) {
+    body.setOutlineColor(color);
+  }
 };
+
+const sf::Color Button::pressedColor = []() { return sf::Color::Black; }();
+
+const sf::Color Button::unpressedColor = []() {
+  return sf::Color(127, 127, 127);
+}();

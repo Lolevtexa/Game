@@ -1,4 +1,5 @@
 #pragma once
+#include "multiSelectButton.hpp"
 #include "textButton.hpp"
 #include <SFML/Graphics/Font.hpp>
 #include <iostream>
@@ -13,7 +14,6 @@ private:
   std::vector<Button *> mainButtons;
 
   bool resolutionMenuOpened = false;
-  // TODO: make it more flexible
 
   int settingsPage = 0;
   std::vector<std::vector<Button *>> settingsButtons{4};
@@ -29,43 +29,36 @@ public:
     addSettingsButton(
         "Start game", []() { std::cout << "Start game" << std::endl; }, 1);
     addSettingsButton("Back", [this]() { setSettingsPage(0); }, 1);
+
     addSettingsButton("Back", [this]() { setSettingsPage(0); }, 2);
-    // addSettingsButton(
-    //     "Resolution1",
-    //     [this]() {
-    //       resolutionMenuOpened = !resolutionMenuOpened;
-    //       if (resolutionMenuOpened) {
-    //         addSettingsButton(
-    //             "Resolution1",
-    //             [this]() {
-    //               static_cast<TextButton *>(settingsButtons[3][0])
-    //                   ->setText("Resolution1");
-    //               removeSettingsButton(3, 2);
-    //               removeSettingsButton(3, 1);
-    //               resolutionMenuOpened = !resolutionMenuOpened;
-    //             },
-    //             3);
-    //         addSettingsButton(
-    //             "Resolution2",
-    //             [this]() {
-    //               static_cast<TextButton *>(settingsButtons[3][0])
-    //                   ->setText("Resolution2");
-    //               removeSettingsButton(3, 2);
-    //               removeSettingsButton(3, 1);
-    //               resolutionMenuOpened = !resolutionMenuOpened;
-    //             },
-    //             3);
-    //         setSettingsButtonsBound();
-    //       } else {
-    //         removeSettingsButton(3, 2);
-    //         removeSettingsButton(3, 1);
-    //       }
-    //     },
-    //     3);
-    addSettingsResolutionButton({"Resolution1", "Resolution2"}, {}, 3);
-    addSettingsResolutionButton({"Resolution3", "Resolution4"}, {}, 3);
-    // addSettingsButton("Sound", []() { std::cout << "Sound" << std::endl; },
-    // 3); addSettingsButton("Back", [this]() { setSettingsPage(0); }, 3);
+
+    addSettingsResolutionButton(
+        {"Resolution1", "Resolution2"},
+        {[]() { std::cout << "Resolution1" << std::endl; },
+         []() { std::cout << "Resolution2" << std::endl; }},
+        3);
+    addSettingsResolutionButton(
+        {"Resolution3", "Resolution4", "Resolution5"},
+        {[]() { std::cout << "Resolution3" << std::endl; },
+         []() { std::cout << "Resolution4" << std::endl; },
+         []() { std::cout << "Resolution5" << std::endl; }},
+        3);
+    addSettingsButton("Back", [this]() { setSettingsPage(0); }, 3);
+  }
+
+  ~MainScene() {
+    while (mainButtons.size()) {
+      delete *(mainButtons.rbegin());
+      mainButtons.pop_back();
+    }
+
+    while (settingsButtons.size()) {
+      while ((*settingsButtons.rbegin()).size()) {
+        delete *((*settingsButtons.rbegin()).rbegin());
+        (*settingsButtons.rbegin()).pop_back();
+      }
+      settingsButtons.pop_back();
+    }
   }
 
   void eventProcessing(sf::Event event) {
@@ -86,7 +79,7 @@ public:
     for (auto &button : settingsButtons[settingsPage]) {
       button->update();
     }
-    
+
     updateSettingsButtonsBound();
   }
 
@@ -113,7 +106,7 @@ private:
     for (int i = 0; i < mainButtons.size(); i++) {
       mainButtons[i]->setBound(buttonIndent,
                                buttonIndent + i * (buttonHeight + buttonIndent),
-                               buttonWidth, buttonHeight);
+                               buttonWidth, buttonHeight, buttonIndent);
     }
   }
 
@@ -135,41 +128,22 @@ private:
   void addSettingsResolutionButton(const std::vector<std::string> texts,
                                    std::vector<std::function<void()>> funcs,
                                    int page) {
-    int size = settingsButtons[page].size();
-    addSettingsButton(
-        texts[0],
-        [this, texts, size, page]() {
-          resolutionMenuOpened = !resolutionMenuOpened;
-          if (resolutionMenuOpened) {
-            for (int i = 0; i < texts.size(); i++) {
-              addSettingsButton(
-                  texts[i],
-                  [this, i, texts, size, page]() {
-                    static_cast<TextButton *>(settingsButtons[page][size])
-                        ->setText(texts[i]);
-                    for (int j = 0; j < texts.size(); j++) {
-                      removeSettingsButton(page, size + 1);
-                    }
-                    resolutionMenuOpened = !resolutionMenuOpened;
-                  },
-                  page, size + 1 + i);
-            }
-          } else {
-            for (int i = 0; i < texts.size(); i++) {
-              removeSettingsButton(page, size + 1);
-            }
-          }
-        },
-        page);
+    std::vector<Button *> subButtons;
+    for (int i = 0; i < texts.size(); i++) {
+      subButtons.emplace_back(new TextButton(texts[i], funcs[i]));
+    }
+
+    settingsButtons[page].emplace_back(new MultiSelectButton(subButtons));
   }
 
   void updateSettingsButtonsBound() {
     for (int i = 0; i < settingsButtons.size(); i++) {
+      int deltaY = 0;
       for (int j = 0; j < settingsButtons[i].size(); j++) {
-        settingsButtons[i][j]->setBound(buttonIndent * 2 + buttonWidth,
-                                        buttonIndent +
-                                            j * (buttonHeight + buttonIndent),
-                                        buttonWidth, buttonHeight);
+        settingsButtons[i][j]->setBound(
+            buttonIndent + buttonWidth + buttonIndent, buttonIndent + deltaY,
+            buttonWidth, buttonHeight, buttonIndent);
+        deltaY += settingsButtons[i][j]->getBound().getSize().y + buttonIndent;
       }
     }
   }
