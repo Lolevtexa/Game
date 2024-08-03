@@ -13,10 +13,10 @@ private:
 
   std::vector<Button *> mainButtons;
 
-  bool resolutionMenuOpened = false;
-
   int settingsPage = 0;
   std::vector<std::vector<Button *>> settingsButtons{4};
+
+
 
 public:
   MainScene(std::function<void()> exitFunc) {
