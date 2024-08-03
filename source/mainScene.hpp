@@ -1,7 +1,9 @@
 #pragma once
 #include "multiSelectButton.hpp"
+#include "resource.hpp"
 #include "textButton.hpp"
 #include <SFML/Graphics/Font.hpp>
+#include <SFML/Audio/Music.hpp>
 #include <iostream>
 #include <vector>
 
@@ -16,7 +18,7 @@ private:
   int settingsPage = 0;
   std::vector<std::vector<Button *>> settingsButtons{4};
 
-
+  sf::Music *backgroundMusic = Resource::loadBackgroundMusic();
 
 public:
   MainScene(std::function<void()> exitFunc) {
@@ -44,6 +46,10 @@ public:
          []() { std::cout << "Resolution5" << std::endl; }},
         3);
     addSettingsButton("Back", [this]() { setSettingsPage(0); }, 3);
+  
+    backgroundMusic->setLoop(true);
+    backgroundMusic->setVolume(10);
+    backgroundMusic->play();
   }
 
   ~MainScene() {
@@ -59,6 +65,8 @@ public:
       }
       settingsButtons.pop_back();
     }
+
+    delete backgroundMusic;
   }
 
   void eventProcessing(sf::Event event) {

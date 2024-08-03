@@ -15,6 +15,7 @@
 ## Вклад
 
 Иконки спиздил отсюда https://icons8.ru/icons/fluency-systems-filled.
+Музыку спиздил отсюда https://pixabay.com/ru/music/search/genre/%D0%B2%D0%B8%D0%B4%D0%B5%D0%BE%20%D0%B8%D0%B3%D1%80%D1%8B/.
 
 ## Лицензия
 
