@@ -16,7 +16,8 @@ private:
   sf::Music *backgroundMusic = Resource::loadBackgroundMusic();
 
 public:
-  MainScene(std::function<void(int)> exitFunc) {
+  template <typename Func>
+  MainScene(Func exitFunc) {
     addMainButton("New game", [this](int) { setSettingsPage(1); });
     addMainButton("Load game", [this](int) { setSettingsPage(2); });
     addMainButton("Settings", [this](int) { setSettingsPage(3); });
