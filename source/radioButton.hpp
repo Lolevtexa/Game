@@ -1,6 +1,5 @@
 #pragma once
 #include "button.hpp"
-#include <functional>
 #include <vector>
 
 class RadioButton : public Button {
