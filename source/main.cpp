@@ -5,7 +5,7 @@ int main() {
   sf::RenderWindow window(sf::VideoMode(800, 600), "SFML Game");
   window.setFramerateLimit(60);
 
-  MainScene mainScene([&window]() { window.close(); });
+  MainScene mainScene([&window](int) { window.close(); });
 
   while (window.isOpen()) {
     sf::Event event;

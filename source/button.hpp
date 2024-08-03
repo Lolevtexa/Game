@@ -1,4 +1,5 @@
 #pragma once
+#include "SFML/Graphics/Drawable.hpp"
 #include "resource.hpp"
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -13,31 +14,20 @@ protected:
   bool started = false;
   bool isActive = false;
 
+  std::function<void(int)> action;
+
   sf::RectangleShape body;
-  std::function<void()> action;
+  std::vector<sf::Drawable *> drawables;
 
 public:
-  Button(std::function<void()> func) {
+  template <typename Func>
+  Button(Func func) {
     action = func;
 
     body.setOutlineThickness(3);
     body.setFillColor(sf::Color(0, 0, 0, 0));
 
     updateAppearance(unpressedColor);
-  }
-
-  Button &operator=(const Button &button) {
-    body = button.body;
-    action = button.action;
-    isActive = button.isActive;
-
-    return *this;
-  }
-
-  Button(const Button &button) {
-    body = button.body;
-    action = button.action;
-    isActive = button.isActive;
   }
 
   virtual void eventProcessing(sf::Event event) {
@@ -66,7 +56,7 @@ public:
 
   virtual void update() {
     if (isActive) {
-      action();
+      action(0);
       isActive = false;
     }
   }
@@ -82,9 +72,13 @@ public:
 
   virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(body, states);
+
+    for (auto drawable : drawables) {
+      target.draw(*drawable, states);
+    }
   }
 
-  virtual float getValue() { return 0; }
+  // virtual float getValue() { return 0; }
 
   friend class TextButton;
   friend class RadioButton;

@@ -15,23 +15,7 @@ public:
 
     updateAppearance(unpressedColor);
   }
-
-  TextButton &operator=(const TextButton &button) {
-    body = button.body;
-    text = button.text;
-    action = button.action;
-    isActive = button.isActive;
-
-    return *this;
-  }
-
-  TextButton(const TextButton &button) : Button(button) {
-    body = button.body;
-    text = button.text;
-    action = button.action;
-    isActive = button.isActive;
-  }
-
+  
   void setBound(float x, float y, float width = Resource::buttonWidth,
                 float height = Resource::buttonHeight,
                 float indent = Resource::buttonIndent) {

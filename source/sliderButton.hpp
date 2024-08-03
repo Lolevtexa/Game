@@ -8,7 +8,6 @@ protected:
   float maxValue = 100;
   float value;
 
-  bool isDragging = false;
   bool mouseMoved = false;
   float mouseOffset = 0;
 
@@ -17,7 +16,8 @@ protected:
   sf::RectangleShape sliderLineRight;
 
 public:
-  SliderButton(std::function<void()> func, int defaultValue = 10)
+  template <typename Func>
+  SliderButton(Func func, int defaultValue = 10)
       : Button(func), value(defaultValue) {
     slider.setOutlineThickness(3);
     sliderLineLeft.setOutlineThickness(3);
@@ -33,14 +33,13 @@ public:
         if (slider.getGlobalBounds().contains(event.mouseButton.x,
                                               event.mouseButton.y)) {
           updateAppearance(pressedColor);
-          isDragging = true;
+          isActive = true;
         }
       }
     } else if (event.type == sf::Event::MouseButtonReleased) {
       if (event.mouseButton.button == sf::Mouse::Left) {
-        if (isDragging) {
-          isActive = true;
-          isDragging = false;
+        if (isActive) {
+          isActive = false;
         }
         updateAppearance(unpressedColor);
       }
@@ -51,7 +50,7 @@ public:
   }
 
   void update() {
-    if (isDragging && mouseMoved) {
+    if (isActive && mouseMoved) {
       float x = mouseOffset;
       float minX = sliderLineLeft.getPosition().x;
       float maxX = sliderLineRight.getPosition().x;
@@ -59,11 +58,7 @@ public:
       x = std::min(x, maxX);
       float scaleFactor = (x - minX) / (maxX - minX);
       value = minValue + scaleFactor * (maxValue - minValue);
-    }
-
-    if (isActive) {
-      action();
-      isActive = false;
+      action(value);
     }
   }
 

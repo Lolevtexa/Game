@@ -16,30 +16,30 @@ private:
   sf::Music *backgroundMusic = Resource::loadBackgroundMusic();
 
 public:
-  MainScene(std::function<void()> exitFunc) {
-    addMainButton("New game", [this]() { setSettingsPage(1); });
-    addMainButton("Load game", [this]() { setSettingsPage(2); });
-    addMainButton("Settings", [this]() { setSettingsPage(3); });
+  MainScene(std::function<void(int)> exitFunc) {
+    addMainButton("New game", [this](int) { setSettingsPage(1); });
+    addMainButton("Load game", [this](int) { setSettingsPage(2); });
+    addMainButton("Settings", [this](int) { setSettingsPage(3); });
     addMainButton("Exit", exitFunc);
     setMainButtonsBound();
 
     addSettingsTextButton(
-        "Start game", []() { std::cout << "Start game" << std::endl; }, 1);
-    addSettingsTextButton("Back", [this]() { setSettingsPage(0); }, 1);
+        "Start game", [](int) { std::cout << "Start game" << std::endl; }, 1);
+    addSettingsTextButton("Back", [this](int) { setSettingsPage(0); }, 1);
 
-    addSettingsTextButton("Back", [this]() { setSettingsPage(0); }, 2);
+    addSettingsTextButton("Back", [this](int) { setSettingsPage(0); }, 2);
 
     addSettingsRadioButton({"Resolution1", "Resolution2"},
-                           {[]() { std::cout << "Resolution1" << std::endl; },
-                            []() { std::cout << "Resolution2" << std::endl; }},
+                           {[](int) { std::cout << "Resolution1" << std::endl; },
+                            [](int) { std::cout << "Resolution2" << std::endl; }},
                            3);
     addSettingsRadioButton({"Resolution3", "Resolution4", "Resolution5"},
-                           {[]() { std::cout << "Resolution3" << std::endl; },
-                            []() { std::cout << "Resolution4" << std::endl; },
-                            []() { std::cout << "Resolution5" << std::endl; }},
+                           {[](int) { std::cout << "Resolution3" << std::endl; },
+                            [](int) { std::cout << "Resolution4" << std::endl; },
+                            [](int) { std::cout << "Resolution5" << std::endl; }},
                            3);
-    addSettingsSliderButton([]() {}, 10, 3);
-    addSettingsTextButton("Back", [this]() { setSettingsPage(0); }, 3);
+    addSettingsSliderButton([this](int x) { backgroundMusic->setVolume(x); }, 10, 3);
+    addSettingsTextButton("Back", [this](int) { setSettingsPage(0); }, 3);
 
     backgroundMusic->setLoop(true);
     backgroundMusic->setVolume(10);
@@ -83,8 +83,6 @@ public:
     }
 
     updateSettingsButtonsBound();
-
-    backgroundMusic->setVolume(settingsButtons[3][2]->getValue());
   }
 
   void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
@@ -102,7 +100,7 @@ private:
     settingsPage = settingsPage == page ? 0 : page;
   }
 
-  void addMainButton(const std::string &text, std::function<void()> func) {
+  void addMainButton(const std::string &text, std::function<void(int)> func) {
     mainButtons.emplace_back(new TextButton(text, func));
   }
 
@@ -116,12 +114,12 @@ private:
   }
 
   void addSettingsTextButton(const std::string &text,
-                             std::function<void()> func, int page) {
+                             std::function<void(int)> func, int page) {
     settingsButtons[page].emplace_back(new TextButton(text, func));
   }
 
   void addSettingsRadioButton(const std::vector<std::string> texts,
-                              std::vector<std::function<void()>> funcs,
+                              std::vector<std::function<void(int)>> funcs,
                               int page) {
     std::vector<Button *> subButtons;
     for (int i = 0; i < texts.size(); i++) {
@@ -131,7 +129,7 @@ private:
     settingsButtons[page].emplace_back(new RadioButton(subButtons));
   }
 
-  void addSettingsSliderButton(std::function<void()> func, int defaultValue,
+  void addSettingsSliderButton(std::function<void(int)> func, int defaultValue,
                                int page) {
     settingsButtons[page].emplace_back(new SliderButton(func, defaultValue));
   }
