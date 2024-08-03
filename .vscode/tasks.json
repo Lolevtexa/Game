@@ -49,12 +49,34 @@
             }
         },
         {
-            "label": "copy assets",
+            "label": "copy assets for Linux",
             "type": "shell",
             "command": "cp",
             "args": [
-                "-r", "${workspaceFolder}/assets", "${workspaceFolder}/build"
+                "-r", "${workspaceFolder}/assets", "${workspaceFolder}/build/linux",
             ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "copy assets for Windows",
+            "type": "shell",
+            "command": "cp",
+            "args": [
+                "-r", "${workspaceFolder}/assets", "${workspaceFolder}/build/windows",
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "copy assets",
+            "type": "shell",
+            "dependsOn": ["copy assets for Linux", "copy assets for Windows"],
+            "dependsOrder": "sequence",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -65,16 +87,6 @@
             "type": "shell",
             "dependsOn": ["build for Linux", "build for Windows", "find dll files for Windows", "copy assets"],
             "dependsOrder": "sequence",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
-        },
-        {
-            "label": "export LD_LIBRARY_PATH for Linux",
-            "type": "shell",
-            "command": "export",
-            "args": ["LD_LIBRARY_PATH=/home/lolevtexa/proga/Projects/Game/libraries/SFML-2.6.1-linux-gcc-64-bit"],
             "group": {
                 "kind": "build",
                 "isDefault": true
