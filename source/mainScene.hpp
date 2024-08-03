@@ -16,12 +16,12 @@ private:
   sf::Music *backgroundMusic = Resource::loadBackgroundMusic();
 
 public:
-  template <typename Func>
-  MainScene(Func exitFunc) {
+  template <typename Func1, typename Func2, typename Func3>
+  MainScene(Func1 exit, Func2 setFullscreen, Func3 setWindowed) {
     addMainButton("New game", [this](int) { setSettingsPage(1); });
     addMainButton("Load game", [this](int) { setSettingsPage(2); });
     addMainButton("Settings", [this](int) { setSettingsPage(3); });
-    addMainButton("Exit", exitFunc);
+    addMainButton("Exit", exit);
     setMainButtonsBound();
 
     addSettingsTextButton(
@@ -30,19 +30,10 @@ public:
 
     addSettingsTextButton("Back", [this](int) { setSettingsPage(0); }, 2);
 
-    addSettingsRadioButton(
-        {"Resolution1", "Resolution2"},
-        {[](int) { std::cout << "Resolution1" << std::endl; },
-         [](int) { std::cout << "Resolution2" << std::endl; }},
-        3);
-    addSettingsRadioButton(
-        {"Resolution3", "Resolution4", "Resolution5"},
-        {[](int) { std::cout << "Resolution3" << std::endl; },
-         [](int) { std::cout << "Resolution4" << std::endl; },
-         [](int) { std::cout << "Resolution5" << std::endl; }},
-        3);
     addSettingsSliderButton([this](int x) { backgroundMusic->setVolume(x); },
                             10, 3);
+    addSettingsRadioButton({"Windowed", "Fullscreen"},
+                           {setWindowed, setFullscreen}, 3);
     addSettingsTextButton("Back", [this](int) { setSettingsPage(0); }, 3);
 
     backgroundMusic->setLoop(true);

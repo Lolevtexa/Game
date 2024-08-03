@@ -1,11 +1,32 @@
 #include "mainScene.hpp"
 #include <SFML/Graphics.hpp>
 
+void setFullscreen(sf::RenderWindow &window, bool &isFullscreen) {
+  if (!isFullscreen) {
+    window.create(sf::VideoMode::getDesktopMode(), "SFML Game",
+                  sf::Style::Fullscreen);
+    window.setFramerateLimit(60);
+    isFullscreen = true;
+  }
+}
+
+void setWindowed(sf::RenderWindow &window, bool &isFullscreen) {
+  if (isFullscreen) {
+    window.create(sf::VideoMode(800, 600), "SFML Game", sf::Style::Default);
+    window.setFramerateLimit(60);
+    isFullscreen = false;
+  }
+}
+
 int main() {
+  bool isFullscreen = false;
   sf::RenderWindow window(sf::VideoMode(800, 600), "SFML Game");
   window.setFramerateLimit(60);
 
-  MainScene mainScene([&window](int) { window.close(); });
+  MainScene mainScene(
+      [&window](int) { window.close(); },
+      [&window, &isFullscreen](int) { setFullscreen(window, isFullscreen); },
+      [&window, &isFullscreen](int) { setWindowed(window, isFullscreen); });
 
   while (window.isOpen()) {
     sf::Event event;
