@@ -1,5 +1,4 @@
 #pragma once
-#include "SFML/Graphics/Drawable.hpp"
 #include "resource.hpp"
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -17,11 +16,9 @@ protected:
   std::function<void(int)> action;
 
   sf::RectangleShape body;
-  std::vector<sf::Drawable *> drawables;
 
 public:
-  template <typename Func>
-  Button(Func func) {
+  template <typename Func> Button(Func func) {
     action = func;
 
     body.setOutlineThickness(3);
@@ -72,10 +69,6 @@ public:
 
   virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(body, states);
-
-    for (auto drawable : drawables) {
-      target.draw(*drawable, states);
-    }
   }
 
   // virtual float getValue() { return 0; }

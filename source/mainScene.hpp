@@ -1,7 +1,7 @@
 #pragma once
-#include "textButton.hpp"
 #include "radioButton.hpp"
 #include "sliderButton.hpp"
+#include "textButton.hpp"
 #include <SFML/Audio/Music.hpp>
 #include <iostream>
 #include <vector>
@@ -29,16 +29,19 @@ public:
 
     addSettingsTextButton("Back", [this](int) { setSettingsPage(0); }, 2);
 
-    addSettingsRadioButton({"Resolution1", "Resolution2"},
-                           {[](int) { std::cout << "Resolution1" << std::endl; },
-                            [](int) { std::cout << "Resolution2" << std::endl; }},
-                           3);
-    addSettingsRadioButton({"Resolution3", "Resolution4", "Resolution5"},
-                           {[](int) { std::cout << "Resolution3" << std::endl; },
-                            [](int) { std::cout << "Resolution4" << std::endl; },
-                            [](int) { std::cout << "Resolution5" << std::endl; }},
-                           3);
-    addSettingsSliderButton([this](int x) { backgroundMusic->setVolume(x); }, 10, 3);
+    addSettingsRadioButton(
+        {"Resolution1", "Resolution2"},
+        {[](int) { std::cout << "Resolution1" << std::endl; },
+         [](int) { std::cout << "Resolution2" << std::endl; }},
+        3);
+    addSettingsRadioButton(
+        {"Resolution3", "Resolution4", "Resolution5"},
+        {[](int) { std::cout << "Resolution3" << std::endl; },
+         [](int) { std::cout << "Resolution4" << std::endl; },
+         [](int) { std::cout << "Resolution5" << std::endl; }},
+        3);
+    addSettingsSliderButton([this](int x) { backgroundMusic->setVolume(x); },
+                            10, 3);
     addSettingsTextButton("Back", [this](int) { setSettingsPage(0); }, 3);
 
     backgroundMusic->setLoop(true);

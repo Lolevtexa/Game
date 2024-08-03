@@ -15,7 +15,7 @@ public:
 
     updateAppearance(unpressedColor);
   }
-  
+
   void setBound(float x, float y, float width = Resource::buttonWidth,
                 float height = Resource::buttonHeight,
                 float indent = Resource::buttonIndent) {
