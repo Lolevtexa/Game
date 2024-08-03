@@ -1,5 +1,5 @@
 #pragma once
-#include "multiSelectButton.hpp"
+#include "radioButton.hpp"
 #include "resource.hpp"
 #include "textButton.hpp"
 #include <SFML/Graphics/Font.hpp>
@@ -141,7 +141,7 @@ private:
       subButtons.emplace_back(new TextButton(texts[i], funcs[i]));
     }
 
-    settingsButtons[page].emplace_back(new MultiSelectButton(subButtons));
+    settingsButtons[page].emplace_back(new RadioButton(subButtons));
   }
 
   void updateSettingsButtonsBound() {

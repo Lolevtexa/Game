@@ -3,7 +3,7 @@
 #include <functional>
 #include <vector>
 
-class MultiSelectButton : public Button {
+class RadioButton : public Button {
 protected:
   bool selected = false;
 
@@ -11,7 +11,7 @@ protected:
   std::vector<Button *> subButtons;
 
 public:
-  MultiSelectButton(std::vector<Button *> subButtons)
+  RadioButton(std::vector<Button *> subButtons)
       : Button([this]() { selected = !selected; }), subButtons(subButtons) {
     for (int i = 0; i < this->subButtons.size(); i++) {
       std::function<void()> action = this->subButtons[i]->action;
@@ -24,7 +24,7 @@ public:
     updateAppearance(unpressedColor);
   }
 
-  ~MultiSelectButton() {
+  ~RadioButton() {
     while (subButtons.size()) {
       delete *(subButtons.rbegin());
       subButtons.pop_back();

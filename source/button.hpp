@@ -76,7 +76,8 @@ public:
     target.draw(body, states);
   }
 
-  friend class MultiSelectButton;
+  friend class TextButton;
+  friend class RadioButton;
 
 protected:
   virtual void updateAppearance(sf::Color color) {
