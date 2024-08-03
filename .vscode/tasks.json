@@ -63,8 +63,6 @@
         {
             "label": "Build all",
             "type": "shell",
-            "command": "echo",
-            "args": ["Building everything..."],
             "dependsOn": ["build for Linux", "build for Windows", "find dll files for Windows", "copy assets"],
             "dependsOrder": "sequence",
             "group": {
