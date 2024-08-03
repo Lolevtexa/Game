@@ -1,18 +1,13 @@
 #pragma once
-#include "radioButton.hpp"
-#include "resource.hpp"
 #include "textButton.hpp"
-#include <SFML/Graphics/Font.hpp>
+#include "radioButton.hpp"
+#include "sliderButton.hpp"
 #include <SFML/Audio/Music.hpp>
 #include <iostream>
 #include <vector>
 
 class MainScene : public sf::Drawable {
 private:
-  const int buttonWidth = 150;
-  const int buttonHeight = 50;
-  const int buttonIndent = 10;
-
   std::vector<Button *> mainButtons;
 
   int settingsPage = 0;
@@ -28,25 +23,24 @@ public:
     addMainButton("Exit", exitFunc);
     setMainButtonsBound();
 
-    addSettingsButton(
+    addSettingsTextButton(
         "Start game", []() { std::cout << "Start game" << std::endl; }, 1);
-    addSettingsButton("Back", [this]() { setSettingsPage(0); }, 1);
+    addSettingsTextButton("Back", [this]() { setSettingsPage(0); }, 1);
 
-    addSettingsButton("Back", [this]() { setSettingsPage(0); }, 2);
+    addSettingsTextButton("Back", [this]() { setSettingsPage(0); }, 2);
 
-    addSettingsResolutionButton(
-        {"Resolution1", "Resolution2"},
-        {[]() { std::cout << "Resolution1" << std::endl; },
-         []() { std::cout << "Resolution2" << std::endl; }},
-        3);
-    addSettingsResolutionButton(
-        {"Resolution3", "Resolution4", "Resolution5"},
-        {[]() { std::cout << "Resolution3" << std::endl; },
-         []() { std::cout << "Resolution4" << std::endl; },
-         []() { std::cout << "Resolution5" << std::endl; }},
-        3);
-    addSettingsButton("Back", [this]() { setSettingsPage(0); }, 3);
-  
+    addSettingsRadioButton({"Resolution1", "Resolution2"},
+                           {[]() { std::cout << "Resolution1" << std::endl; },
+                            []() { std::cout << "Resolution2" << std::endl; }},
+                           3);
+    addSettingsRadioButton({"Resolution3", "Resolution4", "Resolution5"},
+                           {[]() { std::cout << "Resolution3" << std::endl; },
+                            []() { std::cout << "Resolution4" << std::endl; },
+                            []() { std::cout << "Resolution5" << std::endl; }},
+                           3);
+    addSettingsSliderButton([]() {}, 10, 3);
+    addSettingsTextButton("Back", [this]() { setSettingsPage(0); }, 3);
+
     backgroundMusic->setLoop(true);
     backgroundMusic->setVolume(10);
     backgroundMusic->play();
@@ -89,6 +83,8 @@ public:
     }
 
     updateSettingsButtonsBound();
+
+    backgroundMusic->setVolume(settingsButtons[3][2]->getValue());
   }
 
   void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
@@ -112,30 +108,21 @@ private:
 
   void setMainButtonsBound() {
     for (int i = 0; i < mainButtons.size(); i++) {
-      mainButtons[i]->setBound(buttonIndent,
-                               buttonIndent + i * (buttonHeight + buttonIndent),
-                               buttonWidth, buttonHeight, buttonIndent);
+      mainButtons[i]->setBound(
+          Resource::buttonIndent,
+          Resource::buttonIndent +
+              i * (Resource::buttonHeight + Resource::buttonIndent));
     }
   }
 
-  void addSettingsButton(const std::string &text, std::function<void()> func,
-                         int page) {
+  void addSettingsTextButton(const std::string &text,
+                             std::function<void()> func, int page) {
     settingsButtons[page].emplace_back(new TextButton(text, func));
   }
 
-  void addSettingsButton(const std::string &text, std::function<void()> func,
-                         int page, int index) {
-    settingsButtons[page].insert(settingsButtons[page].begin() + index,
-                                 new TextButton(text, func));
-  }
-
-  void removeSettingsButton(int page, int index) {
-    settingsButtons[page].erase(settingsButtons[page].begin() + index);
-  }
-
-  void addSettingsResolutionButton(const std::vector<std::string> texts,
-                                   std::vector<std::function<void()>> funcs,
-                                   int page) {
+  void addSettingsRadioButton(const std::vector<std::string> texts,
+                              std::vector<std::function<void()>> funcs,
+                              int page) {
     std::vector<Button *> subButtons;
     for (int i = 0; i < texts.size(); i++) {
       subButtons.emplace_back(new TextButton(texts[i], funcs[i]));
@@ -144,14 +131,21 @@ private:
     settingsButtons[page].emplace_back(new RadioButton(subButtons));
   }
 
+  void addSettingsSliderButton(std::function<void()> func, int defaultValue,
+                               int page) {
+    settingsButtons[page].emplace_back(new SliderButton(func, defaultValue));
+  }
+
   void updateSettingsButtonsBound() {
     for (int i = 0; i < settingsButtons.size(); i++) {
       int deltaY = 0;
       for (int j = 0; j < settingsButtons[i].size(); j++) {
-        settingsButtons[i][j]->setBound(
-            buttonIndent + buttonWidth + buttonIndent, buttonIndent + deltaY,
-            buttonWidth, buttonHeight, buttonIndent);
-        deltaY += settingsButtons[i][j]->getBound().getSize().y + buttonIndent;
+        settingsButtons[i][j]->setBound(Resource::buttonIndent +
+                                            Resource::buttonWidth +
+                                            Resource::buttonIndent,
+                                        Resource::buttonIndent + deltaY);
+        deltaY += settingsButtons[i][j]->getBound().getSize().y +
+                  Resource::buttonIndent;
       }
     }
   }

@@ -50,11 +50,14 @@ public:
     Button::update();
   }
 
-  void setBound(int x, int y, int width, int height, int indent) {
+  void setBound(float x, float y, float width = Resource::buttonWidth,
+                float height = Resource::buttonHeight,
+                float indent = Resource::buttonIndent) {
     if (selected) {
       Button::setBound(x, y, width,
                        height * subButtons.size() +
-                           indent * (subButtons.size() - 1));
+                           indent * (subButtons.size() - 1),
+                       indent);
 
       int deltaY = 0;
       for (int i = 0; i < subButtons.size(); i++) {
@@ -62,7 +65,7 @@ public:
         deltaY += subButtons[i]->getBound().getSize().y + indent;
       }
     } else {
-      Button::setBound(x, y, width, height);
+      Button::setBound(x, y, width, height, indent);
 
       subButtons[buttonNumber]->setBound(x, y, width, height, indent);
     }

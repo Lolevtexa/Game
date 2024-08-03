@@ -1,6 +1,5 @@
 #pragma once
 #include "button.hpp"
-#include "resource.hpp"
 #include <SFML/Graphics/Text.hpp>
 
 class TextButton : public Button {
@@ -33,11 +32,13 @@ public:
     isActive = button.isActive;
   }
 
-  void setBound(int x, int y, int width, int height, int indent = 0) {
-    Button::setBound(x, y, width, height);
+  void setBound(float x, float y, float width = Resource::buttonWidth,
+                float height = Resource::buttonHeight,
+                float indent = Resource::buttonIndent) {
+    Button::setBound(x, y, width, height, indent);
 
-    text.setPosition(x + width / 2 - text.getGlobalBounds().width / 2,
-                     y + height / 2 - text.getGlobalBounds().height / 2);
+    text.setPosition(x + width / 2.f - text.getGlobalBounds().width / 2.f,
+                     y + height / 2.f - text.getGlobalBounds().height / 2.f);
   }
 
   void draw(sf::RenderTarget &target, sf::RenderStates states) const {
