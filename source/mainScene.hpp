@@ -1,12 +1,16 @@
 #pragma once
 #include "radioButton.hpp"
-#include "resource.hpp"
 #include "sliderButton.hpp"
 #include "textButton.hpp"
 #include <SFML/Audio/Music.hpp>
 
 class MainScene : public sf::Drawable {
 private:
+  static const int mainButtonWidth = 200;
+  static const int settingsButtonWidth = 300;
+  static const int buttonHeight = 50;
+  static const int buttonIndent = 10;
+
   std::vector<Button *> mainButtons;
 
   int settingsPage = 0;
@@ -116,10 +120,9 @@ private:
 
   void setMainButtonsBound() {
     for (int i = 0; i < mainButtons.size(); i++) {
-      mainButtons[i]->setBound(
-          Resource::buttonIndent,
-          Resource::buttonIndent +
-              i * (Resource::buttonHeight + Resource::buttonIndent));
+      mainButtons[i]->setBound(buttonIndent,
+                               buttonIndent + i * (buttonHeight + buttonIndent),
+                               mainButtonWidth, buttonHeight, buttonIndent);
     }
   }
 
@@ -161,12 +164,11 @@ private:
     for (int i = 0; i < settingsButtons.size(); i++) {
       int deltaY = 0;
       for (int j = 0; j < settingsButtons[i].size(); j++) {
-        settingsButtons[i][j]->setBound(Resource::buttonIndent +
-                                            Resource::buttonWidth +
-                                            Resource::buttonIndent,
-                                        Resource::buttonIndent + deltaY);
-        deltaY += settingsButtons[i][j]->getBound().getSize().y +
-                  Resource::buttonIndent;
+        settingsButtons[i][j]->setBound(
+            buttonIndent + mainButtonWidth + buttonIndent,
+            buttonIndent + deltaY, settingsButtonWidth, buttonHeight,
+            buttonIndent);
+        deltaY += settingsButtons[i][j]->getBound().getSize().y + buttonIndent;
       }
     }
   }

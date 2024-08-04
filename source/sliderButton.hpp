@@ -62,9 +62,7 @@ public:
     }
   }
 
-  void setBound(float x, float y, float width = Resource::buttonWidth,
-                float height = Resource::buttonHeight,
-                float indent = Resource::buttonIndent) {
+  void setBound(float x, float y, float width, float height, float indent) {
     Button::setBound(x, y, width, height, indent);
 
     float radius = height / 2.f - indent;

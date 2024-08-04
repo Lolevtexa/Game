@@ -1,5 +1,4 @@
 #pragma once
-#include "resource.hpp"
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Window/Event.hpp>
@@ -58,9 +57,8 @@ public:
     }
   }
 
-  virtual void setBound(float x, float y, float width = Resource::buttonWidth,
-                        float height = Resource::buttonHeight,
-                        float indent = Resource::buttonIndent) {
+  virtual void setBound(float x, float y, float width, float height,
+                        float indent) {
     body.setSize(sf::Vector2f(width, height));
     body.setPosition(x, y);
   }

@@ -11,10 +11,6 @@
 
 class Resource {
 public:
-  static const int buttonWidth = 200;
-  static const int buttonHeight = 50;
-  static const int buttonIndent = 10;
-
   static const sf::Font defaultFont;
   static nlohmann::json localization;
 

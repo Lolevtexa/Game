@@ -49,9 +49,7 @@ public:
     Button::update();
   }
 
-  void setBound(float x, float y, float width = Resource::buttonWidth,
-                float height = Resource::buttonHeight,
-                float indent = Resource::buttonIndent) {
+  void setBound(float x, float y, float width, float height, float indent) {
     if (selected) {
       Button::setBound(x, y, width,
                        height * subButtons.size() +

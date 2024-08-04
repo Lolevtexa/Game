@@ -1,5 +1,6 @@
 #pragma once
 #include "button.hpp"
+#include "resource.hpp"
 #include <SFML/Graphics/Text.hpp>
 #include <codecvt>
 
@@ -34,9 +35,7 @@ public:
     updateAppearance(unpressedColor);
   }
 
-  void setBound(float x, float y, float width = Resource::buttonWidth,
-                float height = Resource::buttonHeight,
-                float indent = Resource::buttonIndent) {
+  void setBound(float x, float y, float width, float height, float indent) {
     Button::setBound(x, y, width, height, indent);
 
     text.setPosition(x + width / 2.f - text.getGlobalBounds().width / 2.f,
