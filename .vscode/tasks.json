@@ -6,7 +6,7 @@
             "type": "shell",
             "command": "g++",
             "args":[
-                "-g", "${workspaceFolder}/source/main.cpp",
+                "-g", "-std=c++17", "${workspaceFolder}/source/main.cpp",
                 "-o", "${workspaceFolder}/build/linux/Game.out",
                 "-I${workspaceFolder}/include",
                 "-L${workspaceFolder}/libraries/SFML-2.6.1-linux-gcc-64-bit",
@@ -22,7 +22,7 @@
             "type": "shell",
             "command": "/usr/bin/x86_64-w64-mingw32-g++",
             "args": [
-                "-g", "${workspaceFolder}/source/main.cpp",
+                "-g", "-std=c++17", "${workspaceFolder}/source/main.cpp",
                 "-o", "${workspaceFolder}/build/windows/Game.exe",
                 "-I${workspaceFolder}/include",
                 "-L${workspaceFolder}/libraries/SFML-2.6.1-windows-gcc-13.1.0-mingw-64-bit",
