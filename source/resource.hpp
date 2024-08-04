@@ -1,15 +1,22 @@
 #pragma once
 #include <SFML/Audio/Music.hpp>
 #include <SFML/Graphics/Font.hpp>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <nlohmann/json.hpp>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 class Resource {
 public:
-  static const int buttonWidth = 150;
+  static const int buttonWidth = 200;
   static const int buttonHeight = 50;
   static const int buttonIndent = 10;
 
   static const sf::Font defaultFont;
+  static nlohmann::json localization;
 
   static sf::Music *loadBackgroundMusic() {
     sf::Music *music = new sf::Music();
@@ -18,6 +25,47 @@ public:
     }
 
     return music;
+  }
+
+  static std::vector<std::string> listLocalizations() {
+    std::string directoryPath = "assets/localization";
+    std::vector<std::string> jsonFiles;
+
+    try {
+      if (!std::filesystem::exists(directoryPath) ||
+          !std::filesystem::is_directory(directoryPath)) {
+        std::cerr << "Directory does not exist or is not a directory."
+                  << std::endl;
+        return jsonFiles;
+      }
+
+      for (const auto &entry :
+           std::filesystem::directory_iterator(directoryPath)) {
+        if (entry.is_regular_file()) {
+          auto path = entry.path();
+          if (path.extension() == ".json") {
+            jsonFiles.push_back("assets/localization/" +
+                                path.filename().string());
+          }
+        }
+      }
+    } catch (const std::filesystem::filesystem_error &e) {
+      std::cerr << "Filesystem error: " << e.what() << std::endl;
+    } catch (const std::exception &e) {
+      std::cerr << "Standard exception: " << e.what() << std::endl;
+    }
+
+    return jsonFiles;
+  }
+
+  static void loadLocalization(const std::string &filename) {
+    try {
+      localization = nlohmann::json();
+      std::ifstream file(filename);
+      file >> localization;
+    } catch (const std::exception &e) {
+      std::cerr << "Cannot load localization: " << e.what() << std::endl;
+    }
   }
 };
 
@@ -29,3 +77,5 @@ const sf::Font Resource::defaultFont = []() {
 
   return font;
 }();
+
+nlohmann::json Resource::localization = nlohmann::json();

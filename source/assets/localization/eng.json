@@ -1,0 +1,13 @@
+{
+  "language": "English",
+  "buttons": {
+    "new game": "New game",
+    "start game": "Start game",
+    "load game": "Load game",
+    "settings": "Settings",
+    "windowed": "Windowed",
+    "fullscreen": "Fullscreen",
+    "back": "Back",
+    "exit": "Exit"
+  }
+}
