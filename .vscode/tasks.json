@@ -45,7 +45,7 @@
             ],
             "group": {
                 "kind": "build",
-                "isDefault": true
+                "isDefault": false
             }
         },
         {
@@ -57,7 +57,7 @@
             ],
             "group": {
                 "kind": "build",
-                "isDefault": true
+                "isDefault": false
             }
         },
         {
@@ -69,7 +69,7 @@
             ],
             "group": {
                 "kind": "build",
-                "isDefault": true
+                "isDefault": false
             }
         },
         {
@@ -79,13 +79,47 @@
             "dependsOrder": "sequence",
             "group": {
                 "kind": "build",
-                "isDefault": true
+                "isDefault": false
+            }
+        },
+        {
+            "label": "archive for Linux",
+            "type": "shell",
+            "command": "tar",
+            "args": [
+                "-czvf", "${workspaceFolder}/releases/Game.tar.gz", "${workspaceFolder}/build/linux"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "archive for Windows",
+            "type": "shell",
+            "command": "zip",
+            "args": [
+                "-r", "${workspaceFolder}/releases/Game.zip", "${workspaceFolder}/build/windows"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "archive",
+            "type": "shell",
+            "dependsOn": ["archive for Linux", "archive for Windows"],
+            "dependsOrder": "sequence",
+            "group": {
+                "kind": "build",
+                "isDefault": false
             }
         },
         {
             "label": "Build all",
             "type": "shell",
-            "dependsOn": ["build for Linux", "build for Windows", "find dll files for Windows", "copy assets"],
+            "dependsOn": ["build for Linux", "build for Windows", "find dll files for Windows", "copy assets", "archive"],
             "dependsOrder": "sequence",
             "group": {
                 "kind": "build",
