@@ -9,10 +9,12 @@ protected:
   static const sf::Color pressedColor;
   static const sf::Color unpressedColor;
 
+  bool focused = false;
   bool started = false;
-  bool isActive = false;
+  bool activate = false;
+  bool resetColor = false;
 
-  std::function<void(int)> action;
+  std::function<void()> action;
 
   sf::RectangleShape body;
 
@@ -27,35 +29,43 @@ public:
   }
 
   virtual void eventProcessing(sf::Event event) {
+    if (event.type == sf::Event::MouseMoved) {
+      if (body.getGlobalBounds().contains(event.mouseMove.x,
+                                            event.mouseMove.y)) {
+        resetColor = focused == false;
+        focused = true;
+      } else {
+        resetColor = focused == true;
+        focused = false;
+      }
+    }
+
     if (event.type == sf::Event::MouseButtonPressed) {
       if (event.mouseButton.button == sf::Mouse::Left) {
-        if (body.getGlobalBounds().contains(event.mouseButton.x,
-                                            event.mouseButton.y)) {
-          started = true;
-          updateAppearance(pressedColor);
-        }
+        started = focused;
       }
-    } else if (event.type == sf::Event::MouseButtonReleased) {
-      if (event.mouseButton.button == sf::Mouse::Left) {
-        if (body.getGlobalBounds().contains(event.mouseButton.x,
-                                            event.mouseButton.y)) {
-          if (started) {
-            isActive = true;
-            started = false;
-          }
-        }
+    }
 
-        updateAppearance(unpressedColor);
+    if (event.type == sf::Event::MouseButtonReleased) {        
+      if (event.mouseButton.button == sf::Mouse::Left) {
+        activate = focused && started;
+        started = false;
       }
     }
   }
 
   virtual void update() {
-    if (isActive) {
-      action(0);
-      isActive = false;
+    if (resetColor) {
+      updateAppearance(focused ? pressedColor : unpressedColor);
+    }
+
+    if (activate) {
+      action();
+      activate = false;
     }
   }
+
+  virtual void setUnfocus() { updateAppearance(unpressedColor); }
 
   virtual void setBound(float x, float y, float width, float height,
                         float indent) {
@@ -68,8 +78,6 @@ public:
   virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(body, states);
   }
-
-  // virtual float getValue() { return 0; }
 
   friend class TextButton;
   friend class RadioButton;

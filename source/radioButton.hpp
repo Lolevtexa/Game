@@ -4,18 +4,19 @@
 class RadioButton : public Button {
 protected:
   bool selected = false;
+  bool unselect = false;
 
   int buttonNumber = 0;
   std::vector<Button *> subButtons;
 
 public:
   RadioButton(std::vector<Button *> subButtons)
-      : Button([this](int) { selected = !selected; }), subButtons(subButtons) {
+      : Button([this]() { selected = !selected; unselect = selected == false; }), subButtons(subButtons) {
     for (int i = 0; i < this->subButtons.size(); i++) {
-      std::function<void(int)> action = this->subButtons[i]->action;
-      this->subButtons[i]->action = [this, i, action](int) {
+      std::function<void()> action = this->subButtons[i]->action;
+      this->subButtons[i]->action = [this, i, action]() {
         buttonNumber = i;
-        action(0);
+        action();
       };
     }
 
@@ -44,6 +45,12 @@ public:
       for (auto &button : subButtons) {
         button->update();
       }
+    }
+    if (unselect) {
+      for (auto &button : subButtons) {
+        button->setUnfocus();
+      }
+      unselect = false;
     }
 
     Button::update();

@@ -16,9 +16,8 @@ protected:
   sf::RectangleShape sliderLineRight;
 
 public:
-  template <typename Func>
-  SliderButton(Func func, int defaultValue = 10)
-      : Button(func), value(defaultValue) {
+  SliderButton(int defaultValue = 50)
+      : Button([]() {}), value(defaultValue) {
     slider.setOutlineThickness(3);
     sliderLineLeft.setOutlineThickness(3);
     sliderLineRight.setOutlineThickness(3);
@@ -33,13 +32,13 @@ public:
         if (slider.getGlobalBounds().contains(event.mouseButton.x,
                                               event.mouseButton.y)) {
           updateAppearance(pressedColor);
-          isActive = true;
+          activate = true;
         }
       }
     } else if (event.type == sf::Event::MouseButtonReleased) {
       if (event.mouseButton.button == sf::Mouse::Left) {
-        if (isActive) {
-          isActive = false;
+        if (activate) {
+          activate = false;
         }
         updateAppearance(unpressedColor);
       }
@@ -50,7 +49,7 @@ public:
   }
 
   void update() {
-    if (isActive && mouseMoved) {
+    if (activate && mouseMoved) {
       float x = mouseOffset;
       float minX = sliderLineLeft.getPosition().x;
       float maxX = sliderLineRight.getPosition().x;
@@ -58,7 +57,7 @@ public:
       x = std::min(x, maxX);
       float scaleFactor = (x - minX) / (maxX - minX);
       value = minValue + scaleFactor * (maxValue - minValue);
-      action(value);
+      action();
     }
   }
 
@@ -84,6 +83,10 @@ public:
                  0.f),
         0));
     sliderLineRight.setPosition(x + width - indent - radius, y + height / 2.f);
+  }
+
+  int getValue() {
+    return value;
   }
 
   void draw(sf::RenderTarget &target, sf::RenderStates states) const {

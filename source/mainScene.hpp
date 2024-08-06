@@ -16,42 +16,42 @@ private:
   int settingsPage = 0;
   std::vector<std::vector<Button *>> settingsButtons{4};
 
-  std::vector<TextButton *> textButtons;
+  std::vector<TextButton *> textByKeyButtons;
+  std::vector<SliderButton *> sliderButtons;
 
   sf::Music *backgroundMusic = Resource::loadBackgroundMusic();
 
 public:
-  template <typename Func1, typename Func2, typename Func3>
-  MainScene(Func1 exit, Func2 setFullscreen, Func3 setWindowed) {
-    setWindowed(0);
+  template <typename Exit, typename SetFullscreen, typename SetWindowed>
+  MainScene(Exit exit, SetFullscreen setFullscreen, SetWindowed setWindowed){
+    setWindowed();
 
-    getLocalizationsFunc([]() {})[0](0);
+    getLocalizationsFunc([]() {})[0]();
 
     backgroundMusic->setVolume(10);
     backgroundMusic->setLoop(true);
     backgroundMusic->play();
 
-    addMainButton("new game", [this](int) { setSettingsPage(1); });
-    addMainButton("load game", [this](int) { setSettingsPage(2); });
-    addMainButton("settings", [this](int) { setSettingsPage(3); });
+    addMainButton("new game", [this]() { setSettingsPage(1); });
+    addMainButton("load game", [this]() { setSettingsPage(2); });
+    addMainButton("settings", [this]() { setSettingsPage(3); });
     addMainButton("exit", exit);
     setMainButtonsBound();
 
     addSettingsTextButton(1, "start game",
-                          [](int) { std::cout << "Start game" << std::endl; });
-    addSettingsTextButton(1, "back", [this](int) { setSettingsPage(0); });
+                          []() { std::cout << "Start game" << std::endl; });
+    addSettingsTextButton(1, "back", [this]() { setSettingsPage(0); });
 
-    addSettingsTextButton(2, "back", [this](int) { setSettingsPage(0); });
+    addSettingsTextButton(2, "back", [this]() { setSettingsPage(0); });
 
-    addSettingsSliderButton(3,
-                            [this](int x) { backgroundMusic->setVolume(x); });
+    addSettingsSliderButton(3, 10);
     addSettingsRadioButton(3, {"windowed", "fullscreen"},
                            {setWindowed, setFullscreen});
     addSettingsRadioButton(
         3, getLocalizationsNames(),
         getLocalizationsFunc([this]() { updateLocalization(); }),
         ADD_BUTTON_BY_TEXT);
-    addSettingsTextButton(3, "back", [this](int) { setSettingsPage(0); });
+    addSettingsTextButton(3, "back", [this]() { setSettingsPage(0); });
   }
 
   ~MainScene() {
@@ -72,6 +72,7 @@ public:
   }
 
   void eventProcessing(sf::Event event) {
+
     for (auto &button : mainButtons) {
       button->eventProcessing(event);
     }
@@ -91,9 +92,10 @@ public:
     }
 
     updateSettingsButtonsBound();
+    backgroundMusic->setVolume(sliderButtons[0]->getValue());
   }
 
-  void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
+  void draw(sf::RenderTarget &target, sf::RenderStates states) const {
     for (auto &button : mainButtons) {
       target.draw(*button, states);
     }
@@ -108,13 +110,13 @@ private:
     settingsPage = settingsPage == page ? 0 : page;
   }
 
-  void addMainButton(const std::string &text, std::function<void(int)> func,
+  void addMainButton(const std::string &text, std::function<void()> func,
                      int type = ADD_BUTTON_BY_KEY) {
     TextButton *textButton = new TextButton(text, func, type);
     mainButtons.emplace_back(textButton);
 
     if (type == ADD_BUTTON_BY_KEY) {
-      textButtons.emplace_back(textButton);
+      textByKeyButtons.emplace_back(textButton);
     }
   }
 
@@ -127,19 +129,19 @@ private:
   }
 
   void addSettingsTextButton(int page, const std::string &localizationKey,
-                             std::function<void(int)> func,
+                             std::function<void()> func,
                              int type = ADD_BUTTON_BY_KEY) {
     TextButton *textButton = new TextButton(localizationKey, func, type);
     settingsButtons[page].emplace_back(textButton);
 
     if (type == ADD_BUTTON_BY_KEY) {
-      textButtons.emplace_back(textButton);
+      textByKeyButtons.emplace_back(textButton);
     }
   }
 
   void addSettingsRadioButton(int page,
                               const std::vector<std::string> localizationKeys,
-                              std::vector<std::function<void(int)>> funcs,
+                              std::vector<std::function<void()>> funcs,
                               int type = ADD_BUTTON_BY_KEY) {
     std::vector<Button *> subButtons;
     for (int i = 0; i < localizationKeys.size(); i++) {
@@ -148,16 +150,17 @@ private:
       subButtons.emplace_back(textButton);
 
       if (type == ADD_BUTTON_BY_KEY) {
-        textButtons.emplace_back(textButton);
+        textByKeyButtons.emplace_back(textButton);
       }
     }
 
     settingsButtons[page].emplace_back(new RadioButton(subButtons));
   }
 
-  void addSettingsSliderButton(int page, std::function<void(int)> func,
-                               int defaultValue = 10) {
-    settingsButtons[page].emplace_back(new SliderButton(func, defaultValue));
+  void addSettingsSliderButton(int page, int defaultValue = 10) {
+    SliderButton *sliderButton = new SliderButton(defaultValue);
+    sliderButtons.emplace_back(sliderButton);
+    settingsButtons[page].emplace_back(sliderButton);
   }
 
   void updateSettingsButtonsBound() {
@@ -174,11 +177,11 @@ private:
   }
 
   template <typename Func>
-  std::vector<std::function<void(int)>>
+  std::vector<std::function<void()>>
   getLocalizationsFunc(Func updateLocalization) {
-    std::vector<std::function<void(int)>> loadLanguageFuncs;
+    std::vector<std::function<void()>> loadLanguageFuncs;
     for (auto &langugage : Resource::listLocalizations()) {
-      loadLanguageFuncs.emplace_back([langugage, updateLocalization](int) {
+      loadLanguageFuncs.emplace_back([langugage, updateLocalization]() {
         std::ifstream file(langugage);
         Resource::localization = nlohmann::json::parse(file);
         updateLocalization();
@@ -202,7 +205,7 @@ private:
   }
 
   void updateLocalization() {
-    for (auto &button : textButtons) {
+    for (auto &button : textByKeyButtons) {
       button->resetString();
     }
   }

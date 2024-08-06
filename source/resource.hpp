@@ -14,6 +14,9 @@ public:
   static const sf::Font defaultFont;
   static nlohmann::json localization;
 
+  static const sf::Color focusedColor;
+  static const sf::Color unfocusedColor;
+
   static sf::Music *loadBackgroundMusic() {
     sf::Music *music = new sf::Music();
     if (!music->openFromFile("assets/music/hound-dog-jazz.mp3")) {
@@ -64,6 +67,12 @@ public:
     }
   }
 };
+
+const sf::Color Resource::focusedColor = []() { return sf::Color(0, 0, 0); }();
+
+const sf::Color Resource::unfocusedColor = []() {
+  return sf::Color(127, 127, 127);
+}();
 
 const sf::Font Resource::defaultFont = []() {
   sf::Font font;
