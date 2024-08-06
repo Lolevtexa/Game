@@ -1,4 +1,5 @@
 #pragma once
+#include "SFML/Graphics/Texture.hpp"
 #include <SFML/Audio/Music.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <fstream>
@@ -10,13 +11,15 @@ public:
   static const int characterSize = 24;
   static const int lineSpacing = characterSize / 2;
 
+  static const sf::Font defaultFont;
+
+  static nlohmann::json localization;
+
   static const sf::Color focusedColor;
   static const sf::Color unfocusedColor;
   static const sf::Color transparentColor;
 
-  static const sf::Font defaultFont;
-
-  static nlohmann::json localization;
+  static sf::Texture background;
 
   static sf::Music *loadBackgroundMusic() {
     sf::Music *music = new sf::Music();
@@ -69,16 +72,6 @@ public:
   }
 };
 
-const sf::Color Resource::focusedColor = []() { return sf::Color(0, 0, 0); }();
-
-const sf::Color Resource::unfocusedColor = []() {
-  return sf::Color(127, 127, 127);
-}();
-
-const sf::Color Resource::transparentColor = []() {
-  return sf::Color(0, 0, 0, 0);
-}();
-
 const sf::Font Resource::defaultFont = []() {
   sf::Font font;
   if (!font.loadFromFile("assets/fonts/arial.ttf")) {
@@ -89,3 +82,22 @@ const sf::Font Resource::defaultFont = []() {
 }();
 
 nlohmann::json Resource::localization = nlohmann::json();
+
+const sf::Color Resource::focusedColor = []() { return sf::Color(0, 0, 0); }();
+
+const sf::Color Resource::unfocusedColor = []() {
+  return sf::Color(127, 127, 127);
+}();
+
+const sf::Color Resource::transparentColor = []() {
+  return sf::Color(0, 0, 0, 0);
+}();
+
+sf::Texture Resource::background = []() {
+  sf::Texture texture;
+  if (!texture.loadFromFile("assets/images/background.png")) {
+    throw std::runtime_error("Cannot load texture");
+  }
+
+  return texture;
+}();

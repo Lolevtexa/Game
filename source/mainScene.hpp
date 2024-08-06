@@ -1,17 +1,20 @@
 #pragma once
+#include "SFML/Graphics/RectangleShape.hpp"
+#include "SFML/System/Vector2.hpp"
 #include "button1.hpp"
 #include "activatable/text.hpp"
 #include "radioButton.hpp"
 #include "sliderButton.hpp"
 #include "textButton.hpp"
 #include <SFML/Audio/Music.hpp>
+#include <cmath>
 
 class MainScene : public sf::Drawable {
 private:
-  static const int mainButtonWidth = 200;
-  static const int settingsButtonWidth = 300;
-  static const int buttonHeight = 50;
-  static const int buttonIndent = 10;
+  int mainButtonWidth = 200;
+  int settingsButtonWidth = 300;
+  int buttonHeight = 50;
+  int buttonIndent = 10;
 
   std::vector<Button *> mainButtons;
 
@@ -22,6 +25,7 @@ private:
   std::vector<SliderButton *> sliderButtons;
 
   sf::Music *backgroundMusic = Resource::loadBackgroundMusic();
+  sf::RectangleShape background;
 
   Button1 b1, b2;
 
@@ -41,11 +45,14 @@ public:
     backgroundMusic->setLoop(true);
     backgroundMusic->play();
 
+    background.setSize({800, 600});
+    background.setTexture(&Resource::background);
+
     addMainButton("new game", [this]() { setSettingsPage(1); });
     addMainButton("load game", [this]() { setSettingsPage(2); });
     addMainButton("settings", [this]() { setSettingsPage(3); });
     addMainButton("exit", exit);
-    setMainButtonsBound();
+    updateMainButtonBounds();
 
     addSettingsTextButton(1, "start game",
                           []() { std::cout << "Start game" << std::endl; });
@@ -91,6 +98,13 @@ public:
     for (auto &button : settingsButtons[settingsPage]) {
       button->eventProcessing(event);
     }
+
+    if (event.type == sf::Event::Resized) {
+      background.setSize({static_cast<float>(event.size.width),
+                          static_cast<float>(event.size.height)});
+      mainButtonWidth = event.size.width / 4;
+      settingsButtonWidth = event.size.width / 2;
+    }
   }
 
   void update() {
@@ -105,11 +119,14 @@ public:
       button->update();
     }
 
+    updateMainButtonBounds();
     updateSettingsButtonsBound();
     backgroundMusic->setVolume(sliderButtons[0]->getValue());
   }
 
   void draw(sf::RenderTarget &target, sf::RenderStates states) const {
+    target.draw(background, states);
+
     target.draw(b1, states);
     target.draw(b2, states);
 
@@ -137,7 +154,7 @@ private:
     }
   }
 
-  void setMainButtonsBound() {
+  void updateMainButtonBounds() {
     for (int i = 0; i < mainButtons.size(); i++) {
       mainButtons[i]->setBound(buttonIndent,
                                buttonIndent + i * (buttonHeight + buttonIndent),
@@ -226,7 +243,7 @@ private:
       button->resetString();
     }
     
-    setMainButtonsBound();
+    updateMainButtonBounds();
     updateSettingsButtonsBound();
   }
 };
