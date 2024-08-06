@@ -1,24 +1,26 @@
 #pragma once
-#include "activable.hpp"
+#include "activatable.hpp"
+#include <SFML/Graphics/RectangleShape.hpp>
 
-class Button1 : public Activable {
+class Button1 : public Activatable {
 protected:
   bool started = false;
   bool activate = false;
 
   std::function<void()> action;
 
-  std::vector<Activable *> elements;
+  std::vector<Activatable *> elements;
 
   sf::RectangleShape outLine;
 
 public:
   template <typename Action>
-  Button1(Action action, std::vector<Activable *> elements):
-  action(action), elements(elements) {
+  Button1(Action action, std::vector<Activatable *> elements)
+      : action(action), elements(elements) {
     outLine.setOutlineThickness(3);
+    outLine.setFillColor(Resource::transparentColor);
 
-    updateAppearance(Resource::unfocusedColor);
+    appearance(Resource::unfocusedColor);
   }
 
   ~Button1() {
@@ -29,24 +31,26 @@ public:
   }
 
   void eventProcessing(sf::Event event) {
-    Activable::eventProcessing(event);
+    Activatable::eventProcessing(event);
 
-    if (event.type == sf::Event::MouseButtonPressed) {
-      if (event.mouseButton.button == sf::Mouse::Left) {
-        started = focused;
+    if (focused) {
+      if (event.type == sf::Event::MouseButtonPressed) {
+        if (event.mouseButton.button == sf::Mouse::Left) {
+          started = true;
+        }
       }
-    }
 
-    if (event.type == sf::Event::MouseButtonReleased) {        
-      if (event.mouseButton.button == sf::Mouse::Left) {
-        activate = focused && started;
-        started = false;
+      if (event.type == sf::Event::MouseButtonReleased) {
+        if (event.mouseButton.button == sf::Mouse::Left) {
+          activate = started;
+          started = false;
+        }
       }
     }
   }
 
   void update() {
-    Activable::update();
+    Activatable::update();
 
     if (activate) {
       action();
@@ -54,16 +58,17 @@ public:
     }
   }
 
-  void setBound(float x, float y, float width, float height,
-                        float indent) {
-    Activable::setBound(x, y, width, height, indent);
+  void setBound(float x, float y, float width, float height, float indent) {
+    float deltaY = 0;
+    for (auto &element : elements) {
+      element->setBound(x, y + deltaY, width, height, indent);
+      deltaY += element->getBound().height;
+    }
 
     outLine.setPosition(x, y);
-    outLine.setSize(sf::Vector2f(width, height));
+    outLine.setSize(sf::Vector2f(width, deltaY));
 
-    for (auto &element : elements) {
-      element->setBound(x, y, width, height, indent);
-    }
+    Activatable::setBound(x, y, width, deltaY, indent);
   }
 
   void draw(sf::RenderTarget &target, sf::RenderStates states) const {
@@ -75,9 +80,9 @@ public:
   }
 
 protected:
-  void updateAppearance(sf::Color color) {
+  void appearance(sf::Color color) {
     for (auto &element : elements) {
-      element->updateAppearance(color);
+      element->appearance(color);
     }
 
     outLine.setOutlineColor(color);

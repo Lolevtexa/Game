@@ -1,7 +1,10 @@
 #pragma once
+#include "button1.hpp"
+#include "activatable/text.hpp"
 #include "radioButton.hpp"
 #include "sliderButton.hpp"
 #include "textButton.hpp"
+#include <SFML/Audio/Music.hpp>
 
 class MainScene : public sf::Drawable {
 private:
@@ -20,9 +23,16 @@ private:
 
   sf::Music *backgroundMusic = Resource::loadBackgroundMusic();
 
+  Button1 b1, b2;
+
 public:
   template <typename Exit, typename SetFullscreen, typename SetWindowed>
-  MainScene(Exit exit, SetFullscreen setFullscreen, SetWindowed setWindowed) {
+  MainScene(Exit exit, SetFullscreen setFullscreen, SetWindowed setWindowed) 
+:  b1([]() {std::cout << "button \'b1\' has pressed\n";}, {new AText(L"text")}),
+  b2([]() {std::cout << "button \'b2\' has pressed\n";}, {new AText(L"aboba abob abo ab o")})
+  {
+    b1.setBound(300, 300, 50, 50, 10);
+    b2.setBound(350, 300, 50, 50, 10);
     setWindowed();
 
     getLocalizationsFunc([]() {})[0]();
@@ -71,6 +81,9 @@ public:
   }
 
   void eventProcessing(sf::Event event) {
+    b1.eventProcessing(event);
+    b2.eventProcessing(event);
+
     for (auto &button : mainButtons) {
       button->eventProcessing(event);
     }
@@ -81,6 +94,9 @@ public:
   }
 
   void update() {
+    b1.update();
+    b2.update();
+
     for (auto &button : mainButtons) {
       button->update();
     }
@@ -94,6 +110,9 @@ public:
   }
 
   void draw(sf::RenderTarget &target, sf::RenderStates states) const {
+    target.draw(b1, states);
+    target.draw(b2, states);
+
     for (auto &button : mainButtons) {
       target.draw(*button, states);
     }
@@ -206,7 +225,7 @@ private:
     for (auto &button : textByKeyButtons) {
       button->resetString();
     }
-
+    
     setMainButtonsBound();
     updateSettingsButtonsBound();
   }
