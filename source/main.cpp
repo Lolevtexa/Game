@@ -24,11 +24,12 @@ int main() {
   window.setFramerateLimit(60);
 
   MainScene mainScene(
-      [&window](int) { window.close(); },
-      [&window, &isFullscreen](int) { setFullscreen(window, isFullscreen); },
-      [&window, &isFullscreen](int) { setWindowed(window, isFullscreen); });
+      [&window]() { window.close(); },
+      [&window, &isFullscreen]() { setFullscreen(window, isFullscreen); },
+      [&window, &isFullscreen]() { setWindowed(window, isFullscreen); });
 
-  while (window.isOpen()) {
+  for (int i = 0; window.isOpen(); i++) {
+    // std::cout << '\r' << i << "; ";
     sf::Event event;
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed)
