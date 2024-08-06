@@ -10,8 +10,8 @@ public:
                         float indent) {
     body.height = height;
     body.width = width;
-    body.top = y + indent;
-    body.left = x + indent;
+    body.top = y;
+    body.left = x;
   }
 
   sf::FloatRect getBound() { return body; }

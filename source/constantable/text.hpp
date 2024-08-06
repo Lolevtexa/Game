@@ -54,13 +54,15 @@ public:
     }
 
     float deltaY = 0;
+    float minWidth = 0;
     for (auto &line : drawableText) {
       line.setPosition(x + width / 2 - line.getGlobalBounds().width / 2,
                        y + deltaY);
       deltaY += line.getGlobalBounds().height + line.getLineSpacing();
+      minWidth = std::max(minWidth, line.getGlobalBounds().width);
     }
 
-    Bound::setBound(x, y, width, deltaY, indent);
+    Bound::setBound(x, y, minWidth, deltaY, indent);
   }
 
   void resetString() {
