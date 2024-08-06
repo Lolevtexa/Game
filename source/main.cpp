@@ -28,8 +28,7 @@ int main() {
       [&window, &isFullscreen]() { setFullscreen(window, isFullscreen); },
       [&window, &isFullscreen]() { setWindowed(window, isFullscreen); });
 
-  for (int i = 0; window.isOpen(); i++) {
-    // std::cout << '\r' << i << "; ";
+  while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed)

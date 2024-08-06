@@ -2,7 +2,6 @@
 #include "radioButton.hpp"
 #include "sliderButton.hpp"
 #include "textButton.hpp"
-#include <SFML/Audio/Music.hpp>
 
 class MainScene : public sf::Drawable {
 private:
@@ -23,7 +22,7 @@ private:
 
 public:
   template <typename Exit, typename SetFullscreen, typename SetWindowed>
-  MainScene(Exit exit, SetFullscreen setFullscreen, SetWindowed setWindowed){
+  MainScene(Exit exit, SetFullscreen setFullscreen, SetWindowed setWindowed) {
     setWindowed();
 
     getLocalizationsFunc([]() {})[0]();
@@ -72,7 +71,6 @@ public:
   }
 
   void eventProcessing(sf::Event event) {
-
     for (auto &button : mainButtons) {
       button->eventProcessing(event);
     }
@@ -208,5 +206,8 @@ private:
     for (auto &button : textByKeyButtons) {
       button->resetString();
     }
+
+    setMainButtonsBound();
+    updateSettingsButtonsBound();
   }
 };

@@ -2,7 +2,6 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Window/Event.hpp>
-#include <functional>
 
 class Button : public sf::Drawable {
 protected:
@@ -12,7 +11,6 @@ protected:
   bool focused = false;
   bool started = false;
   bool activate = false;
-  bool resetColor = false;
 
   std::function<void()> action;
 
@@ -31,33 +29,31 @@ public:
   virtual void eventProcessing(sf::Event event) {
     if (event.type == sf::Event::MouseMoved) {
       if (body.getGlobalBounds().contains(event.mouseMove.x,
-                                            event.mouseMove.y)) {
-        resetColor = focused == false;
+                                          event.mouseMove.y)) {
         focused = true;
       } else {
-        resetColor = focused == true;
         focused = false;
       }
     }
 
-    if (event.type == sf::Event::MouseButtonPressed) {
-      if (event.mouseButton.button == sf::Mouse::Left) {
-        started = focused;
+    if (focused) {
+      if (event.type == sf::Event::MouseButtonPressed) {
+        if (event.mouseButton.button == sf::Mouse::Left) {
+          started = true;
+        }
       }
-    }
 
-    if (event.type == sf::Event::MouseButtonReleased) {        
-      if (event.mouseButton.button == sf::Mouse::Left) {
-        activate = focused && started;
-        started = false;
+      if (event.type == sf::Event::MouseButtonReleased) {
+        if (event.mouseButton.button == sf::Mouse::Left) {
+          activate = started;
+          started = false;
+        }
       }
     }
   }
 
   virtual void update() {
-    if (resetColor) {
-      updateAppearance(focused ? pressedColor : unpressedColor);
-    }
+    updateAppearance(focused ? pressedColor : unpressedColor);
 
     if (activate) {
       action();

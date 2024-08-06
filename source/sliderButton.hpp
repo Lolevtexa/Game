@@ -1,6 +1,5 @@
 #include "button.hpp"
 #include <SFML/Graphics/CircleShape.hpp>
-#include <algorithm>
 
 class SliderButton : public Button {
 protected:
@@ -16,8 +15,7 @@ protected:
   sf::RectangleShape sliderLineRight;
 
 public:
-  SliderButton(int defaultValue = 50)
-      : Button([]() {}), value(defaultValue) {
+  SliderButton(int defaultValue = 50) : Button([]() {}), value(defaultValue) {
     slider.setOutlineThickness(3);
     sliderLineLeft.setOutlineThickness(3);
     sliderLineRight.setOutlineThickness(3);
@@ -85,9 +83,7 @@ public:
     sliderLineRight.setPosition(x + width - indent - radius, y + height / 2.f);
   }
 
-  int getValue() {
-    return value;
-  }
+  int getValue() { return value; }
 
   void draw(sf::RenderTarget &target, sf::RenderStates states) const {
     Button::draw(target, states);

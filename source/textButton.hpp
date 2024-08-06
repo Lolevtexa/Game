@@ -2,7 +2,6 @@
 #include "button.hpp"
 #include "resource.hpp"
 #include <SFML/Graphics/Text.hpp>
-#include <codecvt>
 
 #define ADD_BUTTON_BY_KEY 0
 #define ADD_BUTTON_BY_TEXT 1

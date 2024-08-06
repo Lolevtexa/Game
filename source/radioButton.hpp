@@ -11,7 +11,11 @@ protected:
 
 public:
   RadioButton(std::vector<Button *> subButtons)
-      : Button([this]() { selected = !selected; unselect = selected == false; }), subButtons(subButtons) {
+      : Button([this]() {
+          selected = !selected;
+          unselect = selected == false;
+        }),
+        subButtons(subButtons) {
     for (int i = 0; i < this->subButtons.size(); i++) {
       std::function<void()> action = this->subButtons[i]->action;
       this->subButtons[i]->action = [this, i, action]() {

@@ -1,21 +1,22 @@
 #pragma once
 #include <SFML/Audio/Music.hpp>
 #include <SFML/Graphics/Font.hpp>
-#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include <stdexcept>
-#include <string>
-#include <vector>
 
 class Resource {
 public:
-  static const sf::Font defaultFont;
-  static nlohmann::json localization;
+  static const int characterSize = 24;
+  static const int lineSpacing = characterSize / 2;
 
   static const sf::Color focusedColor;
   static const sf::Color unfocusedColor;
+  static const sf::Color transparentColor;
+
+  static const sf::Font defaultFont;
+
+  static nlohmann::json localization;
 
   static sf::Music *loadBackgroundMusic() {
     sf::Music *music = new sf::Music();
@@ -72,6 +73,10 @@ const sf::Color Resource::focusedColor = []() { return sf::Color(0, 0, 0); }();
 
 const sf::Color Resource::unfocusedColor = []() {
   return sf::Color(127, 127, 127);
+}();
+
+const sf::Color Resource::transparentColor = []() {
+  return sf::Color(0, 0, 0, 0);
 }();
 
 const sf::Font Resource::defaultFont = []() {
