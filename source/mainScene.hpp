@@ -1,8 +1,8 @@
 #pragma once
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/System/Vector2.hpp"
-#include "button1.hpp"
 #include "activatable/text.hpp"
+#include "button1.hpp"
 #include "radioButton.hpp"
 #include "sliderButton.hpp"
 #include "textButton.hpp"
@@ -11,12 +11,15 @@
 
 class MainScene : public sf::Drawable {
 private:
-  int mainButtonWidth = 200;
-  int settingsButtonWidth = 300;
+  const float menuButtonRatio = 1.f / 4.f;
+  const float settingsButtonRatio = 1.f / 3.f;
+
+  int menuButtonWidth;
+  int settingsButtonWidth;
   int buttonHeight = 50;
   int buttonIndent = 10;
 
-  std::vector<Button *> mainButtons;
+  std::vector<Button *> menuButtons;
 
   int settingsPage = 0;
   std::vector<std::vector<Button *>> settingsButtons{4};
@@ -31,10 +34,14 @@ private:
 
 public:
   template <typename Exit, typename SetFullscreen, typename SetWindowed>
-  MainScene(Exit exit, SetFullscreen setFullscreen, SetWindowed setWindowed) 
-:  b1([]() {std::cout << "button \'b1\' has pressed\n";}, {new AText(L"text")}),
-  b2([]() {std::cout << "button \'b2\' has pressed\n";}, {new AText(L"aboba abob abo ab o")})
-  {
+  MainScene(Exit exit, SetFullscreen setFullscreen, SetWindowed setWindowed,
+            sf::Vector2u windowSize)
+      : b1([]() { std::cout << "button \'b1\' has pressed\n"; },
+           {new AText(L"text")}),
+        b2([]() { std::cout << "button \'b2\' has pressed\n"; },
+           {new AText(L"aboba abob abo ab o")}),
+        menuButtonWidth(windowSize.x * menuButtonRatio),
+        settingsButtonWidth(windowSize.x * settingsButtonRatio) {
     b1.setBound(300, 300, 50, 50, 10);
     b2.setBound(350, 300, 50, 50, 10);
     setWindowed();
@@ -45,8 +52,9 @@ public:
     backgroundMusic->setLoop(true);
     backgroundMusic->play();
 
-    background.setSize({800, 600});
     background.setTexture(&Resource::background);
+    background.setSize(
+        {static_cast<float>(windowSize.x), static_cast<float>(windowSize.y)});
 
     addMainButton("new game", [this]() { setSettingsPage(1); });
     addMainButton("load game", [this]() { setSettingsPage(2); });
@@ -71,9 +79,9 @@ public:
   }
 
   ~MainScene() {
-    while (mainButtons.size()) {
-      delete *(mainButtons.rbegin());
-      mainButtons.pop_back();
+    while (menuButtons.size()) {
+      delete *(menuButtons.rbegin());
+      menuButtons.pop_back();
     }
 
     while (settingsButtons.size()) {
@@ -91,7 +99,7 @@ public:
     b1.eventProcessing(event);
     b2.eventProcessing(event);
 
-    for (auto &button : mainButtons) {
+    for (auto &button : menuButtons) {
       button->eventProcessing(event);
     }
 
@@ -102,7 +110,7 @@ public:
     if (event.type == sf::Event::Resized) {
       background.setSize({static_cast<float>(event.size.width),
                           static_cast<float>(event.size.height)});
-      mainButtonWidth = event.size.width / 4;
+      menuButtonWidth = event.size.width / 4;
       settingsButtonWidth = event.size.width / 2;
     }
   }
@@ -111,7 +119,7 @@ public:
     b1.update();
     b2.update();
 
-    for (auto &button : mainButtons) {
+    for (auto &button : menuButtons) {
       button->update();
     }
 
@@ -130,7 +138,7 @@ public:
     target.draw(b1, states);
     target.draw(b2, states);
 
-    for (auto &button : mainButtons) {
+    for (auto &button : menuButtons) {
       target.draw(*button, states);
     }
 
@@ -147,7 +155,7 @@ private:
   void addMainButton(const std::string &text, std::function<void()> func,
                      int type = ADD_BUTTON_BY_KEY) {
     TextButton *textButton = new TextButton(text, func, type);
-    mainButtons.emplace_back(textButton);
+    menuButtons.emplace_back(textButton);
 
     if (type == ADD_BUTTON_BY_KEY) {
       textByKeyButtons.emplace_back(textButton);
@@ -155,10 +163,10 @@ private:
   }
 
   void updateMainButtonBounds() {
-    for (int i = 0; i < mainButtons.size(); i++) {
-      mainButtons[i]->setBound(buttonIndent,
+    for (int i = 0; i < menuButtons.size(); i++) {
+      menuButtons[i]->setBound(buttonIndent,
                                buttonIndent + i * (buttonHeight + buttonIndent),
-                               mainButtonWidth, buttonHeight, buttonIndent);
+                               menuButtonWidth, buttonHeight, buttonIndent);
     }
   }
 
@@ -202,7 +210,7 @@ private:
       int deltaY = 0;
       for (int j = 0; j < settingsButtons[i].size(); j++) {
         settingsButtons[i][j]->setBound(
-            buttonIndent + mainButtonWidth + buttonIndent,
+            buttonIndent + menuButtonWidth + buttonIndent,
             buttonIndent + deltaY, settingsButtonWidth, buttonHeight,
             buttonIndent);
         deltaY += settingsButtons[i][j]->getBound().getSize().y + buttonIndent;
@@ -242,7 +250,7 @@ private:
     for (auto &button : textByKeyButtons) {
       button->resetString();
     }
-    
+
     updateMainButtonBounds();
     updateSettingsButtonsBound();
   }

@@ -26,7 +26,8 @@ int main() {
   MainScene mainScene(
       [&window]() { window.close(); },
       [&window, &isFullscreen]() { setFullscreen(window, isFullscreen); },
-      [&window, &isFullscreen]() { setWindowed(window, isFullscreen); });
+      [&window, &isFullscreen]() { setWindowed(window, isFullscreen); },
+      window.getSize());
 
   while (window.isOpen()) {
     sf::Event event;
