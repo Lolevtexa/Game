@@ -125,6 +125,24 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "remove Identifier files",
+            "type": "shell",
+            "command": "find . -type f -name '*.Identifier' -delete",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Run for Windows",
+            "type": "shell",
+            "command": "${workspaceFolder}/build/windows/Game.exe",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
         }
     ]
 }
