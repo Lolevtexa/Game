@@ -1,13 +1,10 @@
 #pragma once
-#include "SFML/Graphics/RectangleShape.hpp"
-#include "SFML/System/Vector2.hpp"
-#include "activatable/text.hpp"
-#include "button1.hpp"
-#include "radioButton.hpp"
-#include "sliderButton.hpp"
-#include "textButton.hpp"
-#include <SFML/Audio/Music.hpp>
+#include "widgets/activatable/clickable/button1.hpp"
+#include "widgets/activatable/clickable/radioButton1.hpp"
+#include "widgets/activatable/clickable/slider.hpp"
+#include "widgets/activatable/text.hpp"
 #include <cmath>
+#include <vector>
 
 class MainScene : public sf::Drawable {
 private:
@@ -19,31 +16,23 @@ private:
   int buttonHeight = 50;
   int buttonIndent = 10;
 
-  std::vector<Button *> menuButtons;
+  std::vector<Button1 *> menuButtons;
 
   int settingsPage = 0;
-  std::vector<std::vector<Button *>> settingsButtons{4};
+  std::vector<std::vector<Button1 *>> settingsButtons{4};
 
-  std::vector<TextButton *> textByKeyButtons;
-  std::vector<SliderButton *> sliderButtons;
+  std::vector<AText *> textsByKey;
+  std::vector<Slider *> sliders;
 
   sf::Music *backgroundMusic = Resource::loadBackgroundMusic();
   sf::RectangleShape background;
-
-  Button1 b1, b2;
 
 public:
   template <typename Exit, typename SetFullscreen, typename SetWindowed>
   MainScene(Exit exit, SetFullscreen setFullscreen, SetWindowed setWindowed,
             sf::Vector2u windowSize)
-      : b1([]() { std::cout << "button \'b1\' has pressed\n"; },
-           {new AText(L"text")}),
-        b2([]() { std::cout << "button \'b2\' has pressed\n"; },
-           {new AText(L"aboba abob abo ab o")}),
-        menuButtonWidth(windowSize.x * menuButtonRatio),
+      : menuButtonWidth(windowSize.x * menuButtonRatio),
         settingsButtonWidth(windowSize.x * settingsButtonRatio) {
-    b1.setBound(300, 300, 50, 50, 10);
-    b2.setBound(350, 300, 50, 50, 10);
     setWindowed();
 
     getLocalizationsFunc([]() {})[0]();
@@ -56,26 +45,37 @@ public:
     background.setSize(
         {static_cast<float>(windowSize.x), static_cast<float>(windowSize.y)});
 
-    addMainButton("new game", [this]() { setSettingsPage(1); });
-    addMainButton("load game", [this]() { setSettingsPage(2); });
-    addMainButton("settings", [this]() { setSettingsPage(3); });
-    addMainButton("exit", exit);
+    addMainButton(std::vector<std::string>({"buttons", "new game"}),
+                  [this]() { setSettingsPage(1); });
+    addMainButton(std::vector<std::string>({"buttons", "load game"}),
+                  [this]() { setSettingsPage(2); });
+    addMainButton(std::vector<std::string>({"buttons", "settings"}),
+                  [this]() { setSettingsPage(3); });
+    addMainButton(std::vector<std::string>({"buttons", "exit"}), exit);
     updateMainButtonBounds();
 
-    addSettingsTextButton(1, "start game",
+    addSettingsTextButton(1,
+                          std::vector<std::string>({"buttons", "start game"}),
                           []() { std::cout << "Start game" << std::endl; });
-    addSettingsTextButton(1, "back", [this]() { setSettingsPage(0); });
+    addSettingsTextButton(1, std::vector<std::string>({"buttons", "back"}),
+                          [this]() { setSettingsPage(0); });
 
-    addSettingsTextButton(2, "back", [this]() { setSettingsPage(0); });
+    addSettingsTextButton(2, std::vector<std::string>({"buttons", "back"}),
+                          [this]() { setSettingsPage(0); });
 
-    addSettingsSliderButton(3, 10);
-    addSettingsRadioButton(3, {"windowed", "fullscreen"},
-                           {setWindowed, setFullscreen});
+    addSettingsSliderButton(
+        3, std::vector<std::string>({"buttons", "music volume"}), 10);
     addSettingsRadioButton(
-        3, getLocalizationsNames(),
-        getLocalizationsFunc([this]() { updateLocalization(); }),
-        ADD_BUTTON_BY_TEXT);
-    addSettingsTextButton(3, "back", [this]() { setSettingsPage(0); });
+        3, std::vector<std::string>({"buttons", "screen mode"}),
+        std::vector<std::vector<std::string>>(
+            {{"buttons", "windowed"}, {"buttons", "fullscreen"}}),
+        {setWindowed, setFullscreen});
+    addSettingsRadioButton(
+        3, std::vector<std::string>({"buttons", "language"}),
+        getLocalizationsNames(),
+        getLocalizationsFunc([this]() { updateLocalization(); }));
+    addSettingsTextButton(3, std::vector<std::string>({"buttons", "back"}),
+                          [this]() { setSettingsPage(0); });
   }
 
   ~MainScene() {
@@ -84,21 +84,17 @@ public:
       menuButtons.pop_back();
     }
 
-    while (settingsButtons.size()) {
-      while ((*settingsButtons.rbegin()).size()) {
-        delete *((*settingsButtons.rbegin()).rbegin());
-        (*settingsButtons.rbegin()).pop_back();
+    for (auto &settingsButton : settingsButtons) {
+      while (settingsButton.size()) {
+        delete *(settingsButton.rbegin());
+        settingsButton.pop_back();
       }
-      settingsButtons.pop_back();
     }
 
-    delete backgroundMusic;
+    backgroundMusic->stop();
   }
 
   void eventProcessing(sf::Event event) {
-    b1.eventProcessing(event);
-    b2.eventProcessing(event);
-
     for (auto &button : menuButtons) {
       button->eventProcessing(event);
     }
@@ -116,9 +112,6 @@ public:
   }
 
   void update() {
-    b1.update();
-    b2.update();
-
     for (auto &button : menuButtons) {
       button->update();
     }
@@ -129,14 +122,11 @@ public:
 
     updateMainButtonBounds();
     updateSettingsButtonsBound();
-    backgroundMusic->setVolume(sliderButtons[0]->getValue());
+    backgroundMusic->setVolume(sliders[0]->getValue());
   }
 
   void draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(background, states);
-
-    target.draw(b1, states);
-    target.draw(b2, states);
 
     for (auto &button : menuButtons) {
       target.draw(*button, states);
@@ -152,14 +142,16 @@ private:
     settingsPage = settingsPage == page ? 0 : page;
   }
 
-  void addMainButton(const std::string &text, std::function<void()> func,
-                     int type = ADD_BUTTON_BY_KEY) {
-    TextButton *textButton = new TextButton(text, func, type);
-    menuButtons.emplace_back(textButton);
+  void addMainButton(const std::vector<std::string> &localizationKeys,
+                     std::function<void()> func) {
+    AText *text = new AText(localizationKeys);
+    textsByKey.emplace_back(text);
+    menuButtons.emplace_back(new Button1(func, {text}));
+  }
 
-    if (type == ADD_BUTTON_BY_KEY) {
-      textByKeyButtons.emplace_back(textButton);
-    }
+  void addMainButton(const std::wstring &text, std::function<void()> func) {
+    AText *textButton = new AText(text);
+    menuButtons.emplace_back(new Button1(func, {textButton}));
   }
 
   void updateMainButtonBounds() {
@@ -170,39 +162,62 @@ private:
     }
   }
 
-  void addSettingsTextButton(int page, const std::string &localizationKey,
-                             std::function<void()> func,
-                             int type = ADD_BUTTON_BY_KEY) {
-    TextButton *textButton = new TextButton(localizationKey, func, type);
-    settingsButtons[page].emplace_back(textButton);
-
-    if (type == ADD_BUTTON_BY_KEY) {
-      textByKeyButtons.emplace_back(textButton);
-    }
+  void addSettingsTextButton(int page, const std::vector<std::string> &textKeys,
+                             std::function<void()> func) {
+    AText *text = new AText(textKeys);
+    textsByKey.emplace_back(text);
+    settingsButtons[page].emplace_back(new Button1(func, {text}));
   }
 
-  void addSettingsRadioButton(int page,
-                              const std::vector<std::string> localizationKeys,
-                              std::vector<std::function<void()>> funcs,
-                              int type = ADD_BUTTON_BY_KEY) {
-    std::vector<Button *> subButtons;
-    for (int i = 0; i < localizationKeys.size(); i++) {
-      TextButton *textButton =
-          new TextButton(localizationKeys[i], funcs[i], type);
-      subButtons.emplace_back(textButton);
-
-      if (type == ADD_BUTTON_BY_KEY) {
-        textByKeyButtons.emplace_back(textButton);
-      }
-    }
-
-    settingsButtons[page].emplace_back(new RadioButton(subButtons));
+  void addSettingsTextButton(int page, const std::wstring &text,
+                             std::function<void()> func) {
+    AText *textButton = new AText(text);
+    settingsButtons[page].emplace_back(new Button1(func, {textButton}));
   }
 
-  void addSettingsSliderButton(int page, int defaultValue = 10) {
-    SliderButton *sliderButton = new SliderButton(defaultValue);
-    sliderButtons.emplace_back(sliderButton);
-    settingsButtons[page].emplace_back(sliderButton);
+  void
+  addSettingsRadioButton(int page, const std::vector<std::string> textKeys,
+                         const std::vector<std::vector<std::string>> &textsKeys,
+                         const std::vector<std::function<void()>> &funcs) {
+    AText *text = new AText(textKeys);
+    textsByKey.emplace_back(text);
+
+    std::vector<Button1 *> buttons;
+    for (int i = 0; i < textsKeys.size(); i++) {
+      AText *text = new AText(textsKeys[i]);
+      textsByKey.emplace_back(text);
+      buttons.emplace_back(new Button1(funcs[i], {text}));
+    }
+
+    settingsButtons[page].emplace_back(
+        new RadioButton1([]() {}, {text}, buttons));
+  }
+
+  void addSettingsRadioButton(int page, const std::vector<std::string> textKeys,
+                              const std::vector<std::wstring> &textsKeys,
+                              const std::vector<std::function<void()>> &funcs) {
+    AText *text = new AText(textKeys);
+    textsByKey.emplace_back(text);
+
+    std::vector<Button1 *> buttons;
+    for (int i = 0; i < textsKeys.size(); i++) {
+      AText *text = new AText(textsKeys[i]);
+      textsByKey.emplace_back(text);
+      buttons.emplace_back(new Button1(funcs[i], {text}));
+    }
+
+    settingsButtons[page].emplace_back(
+        new RadioButton1([]() {}, {text}, buttons));
+  }
+
+  void addSettingsSliderButton(int page, std::vector<std::string> textKeys,
+                               int defaultValue = 10) {
+    AText *text = new AText(textKeys);
+    textsByKey.emplace_back(text);
+
+    Slider *slider = new Slider(defaultValue);
+    sliders.emplace_back(slider);
+    settingsButtons[page].emplace_back(new Button1([]() {}, {text, slider}));
   }
 
   void updateSettingsButtonsBound() {
@@ -233,22 +248,23 @@ private:
     return loadLanguageFuncs;
   }
 
-  std::vector<std::string> getLocalizationsNames() {
-    std::vector<std::string> localizationsNames;
+  std::vector<std::wstring> getLocalizationsNames() {
+    std::vector<std::wstring> localizationsNames;
     std::vector<std::string> listLocalizations = Resource::listLocalizations();
 
     for (auto &langugage : listLocalizations) {
       nlohmann::json localization =
           nlohmann::json::parse(std::ifstream(langugage));
-      localizationsNames.emplace_back(localization["language"]);
+      localizationsNames.emplace_back(
+          utf8_to_wstring(localization["language"]));
     }
 
     return localizationsNames;
   }
 
   void updateLocalization() {
-    for (auto &button : textByKeyButtons) {
-      button->resetString();
+    for (auto &text : textsByKey) {
+      text->resetString();
     }
 
     updateMainButtonBounds();

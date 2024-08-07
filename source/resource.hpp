@@ -86,7 +86,7 @@ nlohmann::json Resource::localization = nlohmann::json();
 const sf::Color Resource::focusedColor = []() { return sf::Color(0, 0, 0); }();
 
 const sf::Color Resource::unfocusedColor = []() {
-  return sf::Color(127, 127, 127);
+  return sf::Color(95, 95, 95);
 }();
 
 const sf::Color Resource::transparentColor = []() {
@@ -101,3 +101,8 @@ sf::Texture Resource::background = []() {
 
   return texture;
 }();
+
+static std::wstring utf8_to_wstring(const std::string &str) {
+  std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+  return converter.from_bytes(str);
+}
