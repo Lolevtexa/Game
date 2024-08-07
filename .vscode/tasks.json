@@ -85,9 +85,9 @@
         {
             "label": "archive for Linux",
             "type": "shell",
-            "command": "tar",
+            "command": "cd",
             "args": [
-                "-czvf", "${workspaceFolder}/releases/Game.tar.gz", "${workspaceFolder}/build/linux"
+                "${workspaceFolder}/build/linux", "&&", "tar", "-czvf", "${workspaceFolder}/releases/linux.tar.gz", "**"
             ],
             "group": {
                 "kind": "build",
@@ -97,9 +97,9 @@
         {
             "label": "archive for Windows",
             "type": "shell",
-            "command": "zip",
+            "command": "cd",
             "args": [
-                "-r", "${workspaceFolder}/releases/Game.zip", "${workspaceFolder}/build/windows"
+                "${workspaceFolder}/build/windows", "&&", "zip", "-r", "${workspaceFolder}/releases/windows.zip", "**"
             ],
             "group": {
                 "kind": "build",
