@@ -26,7 +26,8 @@ public:
     appearance(focused ? Resource::focusedColor : Resource::unfocusedColor);
   }
 
-  friend class Button1;
+  friend class Button;
+  friend class AHorizontalWigets;
 
 protected:
   virtual void appearance(sf::Color color) = 0;

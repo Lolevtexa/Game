@@ -1,7 +1,7 @@
 #pragma once
-#include "SFML/Graphics/Texture.hpp"
 #include <SFML/Audio/Music.hpp>
 #include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -14,6 +14,7 @@ public:
   static const sf::Font defaultFont;
 
   static nlohmann::json localization;
+  static nlohmann::json userSettings;
 
   static const sf::Color focusedColor;
   static const sf::Color unfocusedColor;
@@ -31,7 +32,7 @@ public:
   }
 
   static std::vector<std::string> listLocalizations() {
-    std::string directoryPath = "assets/localization";
+    std::string directoryPath = "assets/localizations";
     std::vector<std::string> jsonFiles;
 
     try {
@@ -47,8 +48,7 @@ public:
         if (entry.is_regular_file()) {
           auto path = entry.path();
           if (path.extension() == ".json") {
-            jsonFiles.push_back("assets/localization/" +
-                                path.filename().string());
+            jsonFiles.push_back(directoryPath + "/" + path.filename().string());
           }
         }
       }
@@ -61,13 +61,28 @@ public:
     return jsonFiles;
   }
 
-  static void loadLocalization(const std::string &filename) {
+  static nlohmann::json loadJson(const std::string &filename) {
+    nlohmann::json j;
+
     try {
-      localization = nlohmann::json();
+      j = nlohmann::json();
       std::ifstream file(filename);
-      file >> localization;
+      file >> j;
     } catch (const std::exception &e) {
-      std::cerr << "Cannot load localization: " << e.what() << std::endl;
+      std::cerr << "Cannot load localization: " << filename << " " << e.what()
+                << std::endl;
+    }
+
+    return j;
+  }
+
+  static void writeJson(const std::string &filename, nlohmann::json j) {
+    try {
+      std::ofstream file(filename);
+      file << j;
+    } catch (const std::exception &e) {
+      std::cerr << "Cannot write localization: " << filename << " " << e.what()
+                << std::endl;
     }
   }
 };
@@ -81,7 +96,10 @@ const sf::Font Resource::defaultFont = []() {
   return font;
 }();
 
-nlohmann::json Resource::localization = nlohmann::json();
+nlohmann::json Resource::userSettings =
+    Resource::loadJson("assets/settings.json");
+nlohmann::json Resource::localization =
+    Resource::loadJson(Resource::userSettings["localization"]);
 
 const sf::Color Resource::focusedColor = []() { return sf::Color(0, 0, 0); }();
 

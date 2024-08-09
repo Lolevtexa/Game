@@ -14,8 +14,9 @@ public:
 
 protected:
   void appearance(sf::Color color) {
+    textColor = color;
     for (auto &line : drawableText) {
-      line.setFillColor(color);
+      line.setFillColor(textColor);
     }
   }
 };

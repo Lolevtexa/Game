@@ -5,7 +5,6 @@
 
 class COutline : virtual public Constantable {
 protected:
-  sf::FloatRect *rect;
   sf::RectangleShape outLine;
 
 public:

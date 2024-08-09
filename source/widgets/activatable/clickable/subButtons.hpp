@@ -1,5 +1,5 @@
 #pragma once
-#include "button1.hpp"
+#include "button.hpp"
 
 class SubButtons : virtual public Clickable {
 protected:
@@ -7,10 +7,10 @@ protected:
   bool unselect = true;
 
   int buttonNumber = 0;
-  std::vector<Button1 *> subButtons;
+  std::vector<Button *> subButtons;
 
 public:
-  SubButtons(std::vector<Button1 *> subButtons) : subButtons(subButtons) {
+  SubButtons(std::vector<Button *> subButtons) : subButtons(subButtons) {
     for (int i = 0; i < this->subButtons.size(); i++) {
       std::function<void()> action = this->subButtons[i]->action;
       this->subButtons[i]->action = [this, i, action]() {

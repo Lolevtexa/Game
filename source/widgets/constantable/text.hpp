@@ -13,6 +13,7 @@ protected:
   std::vector<std::string> localizationKeys;
   std::wstring text;
 
+  sf::Color textColor = Resource::focusedColor;
   std::vector<sf::Text> drawableText;
 
 public:
@@ -26,13 +27,14 @@ public:
 
   virtual void setBound(float x, float y, float width, float height,
                         float indent) {
-    if (body.width == 0.f) {
+    if (body.width != width) {
       body.width = width;
       updateDrawableText();
     }
 
     float deltaY = 0;
-    float minWidth = width;
+    float minWidth = 0;
+
     for (auto &line : drawableText) {
       line.setPosition(x + width / 2 - line.getGlobalBounds().width / 2,
                        y + deltaY);
@@ -99,7 +101,7 @@ protected:
   void drawableTextEmplaceBack(const std::wstring &string) {
     drawableText.emplace_back();
     drawableText.rbegin()->setFont(Resource::defaultFont);
-    drawableText.rbegin()->setFillColor(Resource::focusedColor);
+    drawableText.rbegin()->setFillColor(textColor);
     drawableText.rbegin()->setCharacterSize(Resource::characterSize);
     drawableText.rbegin()->setLineSpacing(Resource::lineSpacing);
     drawableText.rbegin()->setString(string);

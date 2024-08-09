@@ -1,0 +1,17 @@
+{
+  "language": "English",
+  "window name" : "aboba",
+  "buttons": {
+    "new game": "New game",
+    "start game": "Start game",
+    "load game": "Load game",
+    "settings": "Settings",
+    "music volume": "Music volume",
+    "screen mode": "Screen mode",
+    "language": "Language",
+    "windowed": "Windowed",
+    "fullscreen": "Fullscreen",
+    "back": "Back",
+    "exit": "Exit"
+  }
+}

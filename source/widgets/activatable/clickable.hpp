@@ -1,6 +1,5 @@
 #pragma once
 #include "../activatable.hpp"
-#include <SFML/Window/Event.hpp>
 
 class Clickable : virtual public Activatable {
 protected:
@@ -17,11 +16,18 @@ public:
 
     if (event.type == sf::Event::MouseButtonReleased) {
       if (event.mouseButton.button == sf::Mouse::Left) {
-        activate = focused && started;
+        activate =
+            body.contains(event.mouseButton.x, event.mouseButton.y) && started;
         started = false;
       }
     }
 
     Activatable::eventProcessing(event);
+
+    if (event.type == sf::Event::MouseMoved) {
+      if (!body.contains(event.mouseMove.x, event.mouseMove.y) && started) {
+        focused = true;
+      }
+    }
   }
 };
