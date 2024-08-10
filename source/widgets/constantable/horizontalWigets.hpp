@@ -1,7 +1,7 @@
 #pragma once
 #include "../constantable.hpp"
 
-template <typename T> class CHorizontalWigets : virtual public Constantable {
+template <typename T = Constantable> class CHorizontalWigets : virtual public Constantable {
 protected:
   std::vector<T *> elements;
 
