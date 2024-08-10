@@ -53,7 +53,7 @@
             "type": "shell",
             "command": "cp",
             "args": [
-                "-r", "${workspaceFolder}/source/assets", "${workspaceFolder}/build/linux",
+                "-r", "${workspaceFolder}/assets", "${workspaceFolder}/build/linux",
             ],
             "group": {
                 "kind": "build",
@@ -65,7 +65,7 @@
             "type": "shell",
             "command": "cp",
             "args": [
-                "-r", "${workspaceFolder}/source/assets", "${workspaceFolder}/build/windows",
+                "-r", "${workspaceFolder}/assets", "${workspaceFolder}/build/windows",
             ],
             "group": {
                 "kind": "build",
