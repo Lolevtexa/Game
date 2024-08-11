@@ -11,7 +11,7 @@ public:
   virtual void setBound(float x, float y, float width, float height,
                         float indent) {
     float sumWidth = 0;
-    float maxHeight = height;
+    float maxHeight = 0;
     for (auto &element : elements) {
       element->setBound(x, y, width, height, indent);
       sumWidth += element->getBound().width + indent;
@@ -27,7 +27,7 @@ public:
       deltaWidth += element->getBound().width + indent;
     }
 
-    Bound::setBound(x, y, width, height, indent);
+    Bound::setBound(x, y, sumWidth, maxHeight, indent);
   }
 
   void draw(sf::RenderTarget &target, sf::RenderStates states) const {

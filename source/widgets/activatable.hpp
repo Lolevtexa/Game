@@ -28,6 +28,7 @@ public:
 
   friend class Button;
   friend class AHorizontalWigets;
+  friend class AVerticalWigets;
 
 protected:
   virtual void appearance(sf::Color color) = 0;
