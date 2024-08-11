@@ -161,14 +161,6 @@ private:
     menuButtons.emplace_back(new Button(func, {textButton}));
   }
 
-  void updateMainButtonBounds() {
-    for (int i = 0; i < menuButtons.size(); i++) {
-      menuButtons[i]->setBound(buttonIndent,
-                               buttonIndent + i * (buttonHeight + buttonIndent),
-                               menuButtonWidth, buttonHeight, buttonIndent);
-    }
-  }
-
   void addSettingsTextButton(int page, const std::vector<std::string> &textKeys,
                              std::function<void()> func) {
     AText *text = new AText(textKeys);
@@ -233,15 +225,25 @@ private:
         new Button(func, {new AHorizontalWigets({text, number}), slider}));
   }
 
+  void updateMainButtonBounds() {
+    int deltaY = 0;
+    for (auto &button : menuButtons) {
+    button->setBound(buttonIndent,
+                               buttonIndent + deltaY,
+                               menuButtonWidth, buttonHeight, buttonIndent);
+      deltaY += button->getBound().getSize().y + buttonIndent;
+    }
+  }
+
   void updateSettingsButtonsBound() {
-    for (int i = 0; i < settingsButtons.size(); i++) {
+    for (auto &buttonsPage : settingsButtons) {
       int deltaY = 0;
-      for (int j = 0; j < settingsButtons[i].size(); j++) {
-        settingsButtons[i][j]->setBound(
+      for (auto &button : buttonsPage) {
+        button->setBound(
             buttonIndent + menuButtonWidth + buttonIndent,
             buttonIndent + deltaY, settingsButtonWidth, buttonHeight,
             buttonIndent);
-        deltaY += settingsButtons[i][j]->getBound().getSize().y + buttonIndent;
+        deltaY += button->getBound().getSize().y + buttonIndent;
       }
     }
   }

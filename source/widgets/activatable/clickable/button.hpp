@@ -54,6 +54,10 @@ public:
     }
     deltaY -= deltaY == 0 ? 0 : indent;
 
+    for (auto &element : elements) {
+      element->setBound(element->getBound().left, element->getBound().top, minWidth, element->getBound().height, indent);
+    }
+
     AOutline::setBound(x, y, minWidth, std::max(deltaY, height), indent);
   }
 
