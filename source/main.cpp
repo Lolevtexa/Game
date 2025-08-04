@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
 // #include <windows.h>
+// Вообще нужный комит
 
 void setTitle(sf::RenderWindow &window) {
   window.setTitle(utf8_to_wstring(Resource::localization["window name"]));
