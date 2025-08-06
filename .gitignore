@@ -1,0 +1,25 @@
+# Каталоги сборки и бинарники
+build/
+dist/
+bin/
+
+# Скомпилированные файлы
+*.o
+*.obj
+*.so
+*.dll
+*.exe
+*.lib
+*.a
+
+# Установленные тулчейны (например, MinGW)
+build/bin/
+build/bin/mingw64/
+build/bin/mingw32/
+
+# Кэш Python
+__pycache__/
+
+# Каталоги IDE/редакторов
+.vscode/
+*.log

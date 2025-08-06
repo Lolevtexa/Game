@@ -1,0 +1,84 @@
+name: Build and Release
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened, closed]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake libsfml-dev
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build --config Release --parallel
+      - name: Package artifacts
+        run: |
+          mkdir -p artifact_linux
+          cp build/* artifact_linux/ || true
+          [ -d resources ] && cp -R resources artifact_linux/
+      - uses: actions/upload-artifact@v3
+        with:
+          name: linux-build
+          path: artifact_linux
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          choco install mingw -y
+          choco install cmake -y
+          choco install sfml -y
+      - name: Configure
+        run: cmake -S . -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build --config Release
+      - name: Package artifacts
+        run: |
+          mkdir artifact_windows
+          copy build\* artifact_windows\ || exit /b 0
+          if exist resources (xcopy resources artifact_windows\resources /E /H /I /Y)
+      - uses: actions/upload-artifact@v3
+        with:
+          name: windows-build
+          path: artifact_windows
+
+  release:
+    needs: [build-linux, build-windows]
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: linux-build
+          path: release/linux
+      - uses: actions/download-artifact@v3
+        with:
+          name: windows-build
+          path: release/windows
+      - name: Generate version
+        id: version
+        run: |
+          VERSION="v$(date +%Y.%m.%d).${{ github.run_number }}"
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+      - uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.VERSION }}
+          name: Release ${{ steps.version.outputs.VERSION }}
+          draft: false
+          prerelease: false
+      - uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.VERSION }}
+          files: |
+            release/linux/**
+            release/windows/**
